@@ -8,18 +8,21 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
+import org.apache.log4j.Logger;
 
 /**
  * Created by yutao on 17/9/11.
  */
-public class ActionHandler {
+public class ActionHandler implements DefaultActionHandler {
 
+  private static Logger LOG = Logger.getLogger(ActionHandler.class);
   private Selector selector = null;
 
   public ActionHandler(Selector selector) {
     this.selector = selector;
   }
 
+  @Override
   public void listen() {
     try {
       while (true) {
@@ -35,50 +38,48 @@ public class ActionHandler {
         }
       }
     } catch (IOException ioe) {
-      ioe.printStackTrace();
+      LOG.error(ioe.getStackTrace());
     }
   }
 
   private void process(SelectionKey key) throws IOException {
     if (key.isAcceptable()) {
       // 接收请求
-      ServerSocketChannel ssc = (ServerSocketChannel) key.channel();
-      SocketChannel channel = ssc.accept();
-      channel.configureBlocking(false);
-      channel.register(selector, SelectionKey.OP_READ);
-      System.out.println("connection id: " + channel.socket().hashCode());
+      acceptAction(key);
     } else if (key.isReadable()) {
       // 读事件
-      SocketChannel channel = (SocketChannel) key.channel();
-      ByteBuffer buffer = ByteBuffer.allocate(1024);
-      int count = channel.read(buffer);
-      if (count > 0) {
-        System.out.println("write socket id: " + channel.socket().hashCode());
-        readByteBuffer(buffer);
-        channel.write(ByteBuffer.wrap(("client id => " + key.hashCode() + "\n").getBytes()));
-      } else {
-        channel.close();
-      }
+      LOG.info("read channel");
+      readAction(key);
     } else if (key.isWritable()) {
       // 写事件
-      System.out.println("write channel");
-      SocketChannel channel = (SocketChannel) key.channel();
-      String name = (String) key.attachment();
-      ByteBuffer block = ByteBuffer.wrap(("Hello" + name).getBytes());
-      if (block != null) {
-        channel.write(block);
-      } else {
-        channel.close();
-      }
+      LOG.info("write channel");
+      write(key);
     }
   }
 
-  private void readByteBuffer(ByteBuffer buffer) {
-    buffer.flip();
-    while (buffer.hasRemaining()) {
-      System.out.print((char) buffer.get());
-    }
-    buffer.clear();
+  protected void acceptAction(SelectionKey key) throws IOException {
+    ServerSocketChannel ssc = (ServerSocketChannel) key.channel();
+    SocketChannel channel = ssc.accept();
+    LOG.info(String.format("client %d connect established", channel.socket().hashCode()));
+    channel.configureBlocking(false);
+    channel.register(selector, SelectionKey.OP_READ);
   }
+
+  protected void readAction(SelectionKey key) throws IOException {
+
+  }
+
+  protected void write(SelectionKey key) throws IOException {
+    SocketChannel channel = (SocketChannel) key.channel();
+    String name = (String) key.attachment();
+    ByteBuffer block = ByteBuffer.wrap(("Hello" + name).getBytes());
+    if (block != null) {
+      channel.write(block);
+    } else {
+      channel.close();
+    }
+  }
+
+
 
 }

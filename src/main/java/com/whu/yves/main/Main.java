@@ -1,6 +1,7 @@
 package com.whu.yves.main;
 
 import com.whu.yves.server.ActionHandler;
+import com.whu.yves.server.PushActionHandler;
 import com.whu.yves.server.SelectorFactory;
 import com.whu.yves.timing.ThreadPoolService;
 
@@ -13,6 +14,6 @@ public class Main {
     //创建推送线程
     ThreadPoolService.initPool(2);
     //开启NIOServer服务
-    new ActionHandler(SelectorFactory.getSelector(7681)).listen();
+    new PushActionHandler(SelectorFactory.getSelector(7681)).listen();
   }
 }

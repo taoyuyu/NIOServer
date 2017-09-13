@@ -13,3 +13,4 @@ pom.xml.tag
 release.properties
 .idea/
 *.iml
+*.log

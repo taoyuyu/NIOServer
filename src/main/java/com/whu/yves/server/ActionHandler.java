@@ -1,7 +1,6 @@
 package com.whu.yves.server;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -10,9 +9,6 @@ import java.util.Iterator;
 import java.util.Set;
 import org.apache.log4j.Logger;
 
-/**
- * Created by yutao on 17/9/11.
- */
 public class ActionHandler implements DefaultActionHandler {
 
   private static Logger LOG = Logger.getLogger(ActionHandler.class);
@@ -42,7 +38,7 @@ public class ActionHandler implements DefaultActionHandler {
     }
   }
 
-  private void process(SelectionKey key) throws IOException {
+  private void process(SelectionKey key) {
     if (key.isAcceptable()) {
       // 接收请求
       acceptAction(key);
@@ -53,33 +49,27 @@ public class ActionHandler implements DefaultActionHandler {
     } else if (key.isWritable()) {
       // 写事件
       LOG.info("write channel");
-      write(key);
+      writeAction(key);
     }
   }
 
-  protected void acceptAction(SelectionKey key) throws IOException {
+  protected void acceptAction(SelectionKey key) {
     ServerSocketChannel ssc = (ServerSocketChannel) key.channel();
-    SocketChannel channel = ssc.accept();
-    LOG.info(String.format("client %d connect established", channel.socket().hashCode()));
-    channel.configureBlocking(false);
-    channel.register(selector, SelectionKey.OP_READ);
-  }
-
-  protected void readAction(SelectionKey key) throws IOException {
-
-  }
-
-  protected void write(SelectionKey key) throws IOException {
-    SocketChannel channel = (SocketChannel) key.channel();
-    String name = (String) key.attachment();
-    ByteBuffer block = ByteBuffer.wrap(("Hello" + name).getBytes());
-    if (block != null) {
-      channel.write(block);
-    } else {
-      channel.close();
+    try {
+      SocketChannel channel = ssc.accept();
+      LOG.info(String.format("client %d connect established", channel.socket().hashCode()));
+      channel.configureBlocking(false);
+      channel.register(selector, SelectionKey.OP_READ);
+    } catch (IOException ioe) {
+      LOG.info(ioe.getStackTrace());
     }
+
   }
 
+  protected void readAction(SelectionKey key) {
+  }
 
+  protected void writeAction(SelectionKey key) {
+  }
 
 }

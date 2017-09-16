@@ -1,5 +1,5 @@
 <messages>
-  <body type="heart_beat">
-    <message>test</message>
+  <body type="heart-beat">
+    <content>this is a message</content>
   </body>
 </messages>

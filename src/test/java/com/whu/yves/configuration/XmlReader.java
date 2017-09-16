@@ -1,8 +1,6 @@
 package com.whu.yves.configuration;
 
-import java.io.File;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.XMLConfiguration;
+import com.whu.yves.protocal.Parser;
 import org.junit.Test;
 
 /**
@@ -10,12 +8,14 @@ import org.junit.Test;
  */
 public class XmlReader {
   @Test
-  public void testMessage() throws ConfigurationException {
-    File file = new File("conf/message.xml");
-    System.out.println(file.getAbsolutePath());
-    XMLConfiguration conf = new XMLConfiguration(file);
-    System.out.println(conf.getString("body[@type]"));
-    System.out.println(conf.getString("body.message"));
+  public void testMessage() {
+    String message = "<messages>\n"
+        + "  <body type=\"heart-beat\">\n"
+        + "    <content>this is a message</content>\n"
+        + "  </body>\n"
+        + "</messages>";
+    Parser parser = new Parser(message);
+    System.out.println(parser.getMessageType());
+    System.out.println(parser.getMessageContent());
   }
-
 }

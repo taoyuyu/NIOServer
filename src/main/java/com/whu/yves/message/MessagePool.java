@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MessagePool {
 
-  private static ConcurrentHashMap<String, PushMessageQueue> messagePool = null;
+  private static ConcurrentHashMap<String, MessageQueue> messagePool = null;
 
   private MessagePool() {
   }
@@ -16,17 +16,28 @@ public class MessagePool {
     if (messagePool == null) {
       synchronized (messagePool.getClass()) {
         if (messagePool == null) {
-          messagePool = new ConcurrentHashMap<String, PushMessageQueue>();
+          messagePool = new ConcurrentHashMap<>();
         }
       }
     }
   }
 
   public String getOneMessageByID(String id) {
-    return messagePool.get(id).poll();
+    MessageQueue queue = messagePool.get(id);
+    if (queue != null) {
+      return queue.poll();
+    }
+    return null;
   }
 
   public void addOneMessage(String id, String message) {
-    messagePool.get(id).put(message);
+    if(messagePool.containsKey(id)) {
+      messagePool.get(id).put(message);
+    } else {
+      MessageQueue queue = new PushMessageQueue();
+      queue.put(message);
+      messagePool.put(id, queue);
+    }
+
   }
 }

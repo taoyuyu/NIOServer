@@ -10,7 +10,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class NIOClient {
+public class ConnectionTest {
   //netstat -antp | grep 13301 | wc -l 统计服务端13301端口socket链接数
 
   private static Vector<Socket> sockets = new Vector<>();

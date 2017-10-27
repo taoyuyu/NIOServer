@@ -16,7 +16,7 @@ public class Main {
     ThreadPoolService.initPool(2);
     LOG.info("Start push thread succeed!");
     //开启NIOServer服务
-    new PushActionHandler(SelectorFactory.getSelector(7681)).listen();
+    new PushActionHandler(SelectorFactory.getSelector(7682)).listen();
     LOG.info("Start Socket listener succeed!");
   }
 }

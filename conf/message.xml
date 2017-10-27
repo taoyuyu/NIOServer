@@ -1,5 +1,6 @@
 <messages>
-  <body type="heart-beat">
+  <body type="heart_beat">
+    <target>taoyu</target>
     <content>this is a message</content>
   </body>
 </messages>

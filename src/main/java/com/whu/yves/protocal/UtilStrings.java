@@ -5,6 +5,6 @@ package com.whu.yves.protocal;
  */
 public class UtilStrings {
   //通信包的类型;
-  public static String HEART_BEAT = "heart-beat";
-  public static String SEND_MESSAGE = "SEND_MESSAGE";
+  public static String HEART_BEAT = "heart_beat";
+  public static String SEND_MESSAGE = "short_message";
 }

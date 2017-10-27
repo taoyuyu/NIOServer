@@ -18,19 +18,20 @@ public class ConnectionTest {
   public static void main(String args[]) {
     final CountDownLatch latch = new CountDownLatch(1024);
     try {
-      for (int i=0; i<1024; ++i) {
-        service.submit(new Runnable() {
-          @Override
-          public void run() {
-            try {
-              Socket socket = new Socket("123.207.4.30", 7681);
-              sockets.add(socket);
-              latch.countDown();
-            } catch (IOException ioe) {
-              ioe.printStackTrace();
-            }
+      Runnable task = new Runnable() {
+        @Override
+        public void run() {
+          try {
+            Socket socket = new Socket("123.207.4.30", 7682);
+            sockets.add(socket);
+            latch.countDown();
+          } catch (IOException ioe) {
+            ioe.printStackTrace();
           }
-        });
+        }
+      };
+      for (int i=0; i<1024; ++i) {
+        service.submit(task);
       }
       latch.await();
       System.out.println("Connection established!!!");
@@ -39,6 +40,7 @@ public class ConnectionTest {
       while ((index = Integer.valueOf(sin.readLine())) != -1) {
         writeMessage(sockets.get(index), sin);
       }
+      //关闭socket连接
       closeSockets();
     } catch (Exception e) {
       System.out.println("ERROR: " + e);

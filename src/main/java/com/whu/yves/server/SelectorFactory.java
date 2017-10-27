@@ -6,12 +6,13 @@ import java.net.ServerSocket;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
+import org.apache.log4j.Logger;
 
 /**
  * Created by yutao on 17/9/11.
  */
 public class SelectorFactory {
-
+  private static Logger LOG = Logger.getLogger(SelectorFactory.class);
   private static Selector selector = null;
   private static int PORT;
 
@@ -27,6 +28,7 @@ public class SelectorFactory {
             selector = Selector.open();
             init();
           } catch (IOException ioe) {
+            LOG.error(String.format("Open port %d failed", port));
             throw new RuntimeException("selector init error");
           }
         }
@@ -45,5 +47,6 @@ public class SelectorFactory {
     socket.bind(address);
     //注册事件
     server.register(selector, SelectionKey.OP_ACCEPT);
+    LOG.info(String.format("Open port %d succeed!!!", PORT));
   }
 }

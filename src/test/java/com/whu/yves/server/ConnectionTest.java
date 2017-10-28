@@ -12,11 +12,11 @@ import java.util.concurrent.Executors;
 
 public class ConnectionTest {
   //netstat -antp | grep 13301 | wc -l 统计服务端13301端口socket链接数
-
+  private static int NUM = 2048;
   private static Vector<Socket> sockets = new Vector<>();
   private static ExecutorService service = Executors.newFixedThreadPool(4);
   public static void main(String args[]) {
-    final CountDownLatch latch = new CountDownLatch(1024);
+    final CountDownLatch latch = new CountDownLatch(NUM);
     try {
       Runnable task = new Runnable() {
         @Override
@@ -30,7 +30,7 @@ public class ConnectionTest {
           }
         }
       };
-      for (int i=0; i<1024; ++i) {
+      for (int i=0; i<NUM; ++i) {
         service.submit(task);
       }
       latch.await();

@@ -23,7 +23,7 @@ public class PushActionHandler extends ActionHandler {
     try {
       int count = channel.read(buffer);
       if (count > 0) {
-        System.out.println("write socket id: " + channel.socket().hashCode());
+        LOG.info("write socket id: " + channel.socket().hashCode());
         readByteBuffer(buffer);
         channel.write(ByteBuffer.wrap(("client id => " + key.hashCode() + "\n").getBytes()));
       } else {
@@ -37,10 +37,12 @@ public class PushActionHandler extends ActionHandler {
 
 
   private void readByteBuffer(ByteBuffer buffer) {
+    StringBuilder sb = new StringBuilder();
     buffer.flip();
     while (buffer.hasRemaining()) {
-      System.out.print((char) buffer.get());
+      sb.append((char)buffer.get());
     }
+    LOG.info(String.format("message: %s", sb.toString()));
     buffer.clear();
   }
 

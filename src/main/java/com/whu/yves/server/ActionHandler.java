@@ -63,7 +63,6 @@ public class ActionHandler implements DefaultActionHandler {
     } catch (IOException ioe) {
       LOG.info(ioe.getStackTrace());
     }
-
   }
 
   protected void readAction(SelectionKey key) {

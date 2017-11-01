@@ -7,4 +7,5 @@ public class UtilStrings {
   //通信包的类型;
   public static String HEART_BEAT = "heart_beat";
   public static String SEND_MESSAGE = "short_message";
+  public static String IDENTIFY = "identify";
 }

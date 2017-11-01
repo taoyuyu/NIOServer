@@ -14,7 +14,7 @@ public class MessagePool {
 
   public static void init() {
     if (messagePool == null) {
-      synchronized (messagePool.getClass()) {
+      synchronized (ConcurrentHashMap.class) {
         if (messagePool == null) {
           messagePool = new ConcurrentHashMap<>();
         }
@@ -22,7 +22,7 @@ public class MessagePool {
     }
   }
 
-  public String getOneMessageByID(String id) {
+  public static String getOneMessageByID(String id) {
     MessageQueue queue = messagePool.get(id);
     if (queue != null) {
       return queue.poll();
@@ -30,7 +30,7 @@ public class MessagePool {
     return null;
   }
 
-  public void addOneMessage(String id, String message) {
+  public static void addOneMessage(String id, String message) {
     if(messagePool.containsKey(id)) {
       messagePool.get(id).put(message);
     } else {

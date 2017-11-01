@@ -5,5 +5,6 @@ package com.whu.yves.protocal;
  */
 public enum MessageType {
   HEART_BEAT,
-  SHORT_MESSAGE
+  SHORT_MESSAGE,
+  IDENTIFY
 }

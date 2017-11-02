@@ -1,6 +1,11 @@
 <messages>
   <body type="heart_beat">
-    <target>taoyu</target>
+    <content> </content>
+  </body>
+
+  <body type="short_message" id="Leon">
+    <target>AdaWang</target>
     <content>this is a message</content>
+    <time>1509534484</time>
   </body>
 </messages>

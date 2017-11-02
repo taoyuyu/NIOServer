@@ -1,5 +1,6 @@
 package com.whu.yves.server;
 
+import com.whu.yves.message.MessagePackager;
 import com.whu.yves.message.MessagePool;
 import com.whu.yves.protocal.Parser;
 import java.io.IOException;
@@ -80,7 +81,8 @@ public class ChatActionHandler extends ActionHandler {
   }
 
   private void heartBeat(Parser parser, SocketChannel channel) throws IOException {
-    channel.write(ByteBuffer.wrap(("client id => " + channel.hashCode() + "\n").getBytes()));
+    String id = parser.getID();
+    channel.write(ByteBuffer.wrap(MessagePackager.responseHeartBeat(id).getBytes()));
   }
 
   private void shortMessage(Parser parser, SocketChannel channel) throws IOException {

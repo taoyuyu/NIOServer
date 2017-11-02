@@ -63,4 +63,14 @@ public class Parser {
     }
     return body.getChildText("target");
   }
+
+  public String getID() {
+    if (document == null) {
+      throw new RuntimeException("read xml error");
+    }
+    Element root = document.getRootElement();
+    String id = root.getChild("body").getAttributeValue("id");
+    return id;
+  }
+
 }

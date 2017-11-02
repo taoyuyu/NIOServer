@@ -34,11 +34,11 @@ public class ChatActionHandler extends ActionHandler {
         Parser parser = new Parser(message);
         switch (parser.getMessageType()) {
           case IDENTIFY:
-            //TODO 获取用户id, 根据id在MessagePool中读取历史消息, 回写消息
+            // 获取用户id, 根据id在MessagePool中读取历史消息, 回写消息
             identify(parser, channel);
             break;
           case HEART_BEAT:
-            //TODO 回复收到消息
+            // 回复收到消息
             heartBeat(parser, channel);
             break;
           case SHORT_MESSAGE:

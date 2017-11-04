@@ -14,4 +14,8 @@
       <time>1509534484</time>
     </body>
   </message>
+
+  <message>
+    <body type="close_connection" id="Leon" />
+  </message>
 </messages>

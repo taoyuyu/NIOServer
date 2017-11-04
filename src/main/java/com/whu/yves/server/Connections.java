@@ -50,4 +50,17 @@ public class Connections {
     }
     return true;
   }
+
+  public static void closeOneConnection(String id, SelectableChannel channel) {
+    if (connections.get(id) == channel) {
+      try {
+        channel.close();
+        connections.remove(id);
+      } catch (IOException e) {
+        
+      }
+    } else {
+      LOG.error("close connection failed : id = " + id);
+    }
+  }
 }

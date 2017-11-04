@@ -53,7 +53,7 @@ public class ChatActionHandler extends ActionHandler {
             shortMessage(parser);
             break;
           case CLOSE_CONNECTION:
-            channel.close();
+            Connections.closeOneConnection(parser.getID(), channel);
           default:
             LOG.error("Undefined message type");
         }
@@ -92,7 +92,7 @@ public class ChatActionHandler extends ActionHandler {
 
   private void shortMessage(Parser parser) throws IOException {
     String target = parser.getMessageTarget();
-    if(!Connections.sendOneMessage(target, parser.getMessage())){
+    if (!Connections.sendOneMessage(target, parser.getMessage())) {
       MessagePool.addOneMessage(target, parser.getMessage());
     }
   }

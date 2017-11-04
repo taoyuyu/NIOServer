@@ -2,6 +2,7 @@ package com.whu.yves.server;
 
 import com.whu.yves.message.MessagePackager;
 import com.whu.yves.message.MessagePool;
+import com.whu.yves.protocal.MessageType;
 import com.whu.yves.protocal.Parser;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -12,6 +13,7 @@ import org.apache.log4j.Logger;
 
 /**
  * Created by yutao on 17/9/14.
+ * 读写事件响应
  */
 public class ChatActionHandler extends ActionHandler {
 
@@ -32,7 +34,8 @@ public class ChatActionHandler extends ActionHandler {
         LOG.info("write socket id: " + channel.socket().hashCode());
         String message = readByteBuffer(buffer);
         Parser parser = new Parser(message);
-        switch (parser.getMessageType()) {
+        MessageType type = parser.getMessageType();
+        switch (type) {
           case IDENTIFY:
             // 获取用户id, 根据id在MessagePool中读取历史消息, 回写消息
             identify(parser, channel);
@@ -42,20 +45,23 @@ public class ChatActionHandler extends ActionHandler {
             heartBeat(parser, channel);
             break;
           case SHORT_MESSAGE:
-            //TODO 查询消息目标用户, 转发消息. 用户离线/在线
+            // 查询消息目标用户, 转发消息. 用户离线/在线
             /**
              * 目标用户在线则直接转发
              * 目标用户离线则写入MessagePool
              * */
             shortMessage(parser);
             break;
+          default:
+            LOG.error("Undefined message type");
         }
+
       } else {
         channel.close();
       }
 
-    } catch (IOException ioe) {
-      LOG.error(ioe.getStackTrace());
+    } catch (IOException | RuntimeException e) {
+      LOG.error(e.getMessage());
     }
   }
 
@@ -74,7 +80,7 @@ public class ChatActionHandler extends ActionHandler {
     String id = parser.getID();
     Connections.putOneConnection(id, channel);
     String message;
-    while ((message = MessagePool.getOneMessageByID(id))!=null) {
+    while ((message = MessagePool.getOneMessageByID(id)) != null) {
       channel.write(ByteBuffer.wrap(message.getBytes()));
     }
   }
@@ -86,6 +92,8 @@ public class ChatActionHandler extends ActionHandler {
 
   private void shortMessage(Parser parser) throws IOException {
     String target = parser.getMessageTarget();
-    Connections.sendOneMessage(target, parser.getMessage());
+    if(!Connections.sendOneMessage(target, parser.getMessage())){
+      MessagePool.addOneMessage(target, parser.getMessage());
+    }
   }
 }

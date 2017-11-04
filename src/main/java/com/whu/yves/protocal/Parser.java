@@ -26,14 +26,15 @@ public class Parser {
     try {
       document = builder.build(source);
     } catch (JDOMException | IOException e) {
-      LOG.error(e.getStackTrace());
+      LOG.error("Parser xml message error: " + message);
+      throw new RuntimeException("Parser xml message error: " + message);
     }
   }
 
   public MessageType getMessageType() {
     if (document == null) {
-      LOG.error("No type in xml message: " + document.toString());
-      throw new RuntimeException("read xml error");
+      LOG.error("Read message error: " + message);
+      return null;
     }
     Element root = document.getRootElement();
     String type = root.getChild("body").getAttributeValue("type");
@@ -42,33 +43,34 @@ public class Parser {
 
   public String getMessageContent() {
     if (document == null) {
-      throw new RuntimeException("read xml error");
+      LOG.error("Read message error: " + message);
+      return null;
     }
     Element root = document.getRootElement();
     Element body = root.getChild("body");
     if (null == body) {
-      LOG.error("No body in xml message: " + document.toString());
-      throw new RuntimeException("No body in xml message");
+      LOG.error("No body in xml message: " + message);
+      return null;
     }
     return body.getChildText("content");
   }
 
   public String getMessageTarget() {
     if (document == null) {
-      throw new RuntimeException("read xml error");
+      LOG.error("Read message error: " + message);
+      return null;
     }
     Element root = document.getRootElement();
     Element body = root.getChild("body");
     if (null == body) {
-      LOG.error("No body in xml message: " + document.toString());
-      throw new RuntimeException("No body in xml message");
+      LOG.error("No body in xml message: " + message);
     }
     return body.getChildText("target");
   }
 
   public String getID() {
     if (document == null) {
-      throw new RuntimeException("read xml error");
+      LOG.error("Read message error: " + message);
     }
     Element root = document.getRootElement();
     String id = root.getChild("body").getAttributeValue("id");

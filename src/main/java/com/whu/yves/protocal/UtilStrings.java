@@ -8,4 +8,5 @@ public class UtilStrings {
   public static String HEART_BEAT = "heart_beat";
   public static String SEND_MESSAGE = "short_message";
   public static String IDENTIFY = "identify";
+  public static String CLOSE_CONNECTION = "close_connection";
 }

@@ -16,7 +16,16 @@ public class Connections {
   private static ConcurrentHashMap<String, SelectableChannel> connections = new ConcurrentHashMap<>();
   private Connections() {}
   public static void putOneConnection(String id, SelectableChannel channel) {
-    connections.put(id, channel);
+    SelectableChannel oldChannel = connections.get(id);
+    if (oldChannel == null) {
+      connections.put(id, channel);
+    } else {
+      try {
+        oldChannel.close();
+      } catch (IOException e) {
+
+      }
+    }
   }
   public static boolean sendOneMessage(String id, String message) {
     SocketChannel channel = (SocketChannel) connections.get(id);

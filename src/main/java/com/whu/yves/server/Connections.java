@@ -12,21 +12,29 @@ import org.apache.log4j.Logger;
  * 保存用户名与Channel的映射
  */
 public class Connections {
+
   private static Logger LOG = Logger.getLogger(Connections.class);
   private static ConcurrentHashMap<String, SelectableChannel> connections = new ConcurrentHashMap<>();
-  private Connections() {}
+
+  private Connections() {
+  }
+
   public static void putOneConnection(String id, SelectableChannel channel) {
     SelectableChannel oldChannel = connections.get(id);
     if (oldChannel == null) {
       connections.put(id, channel);
     } else {
       try {
-        oldChannel.close();
+        if (oldChannel != channel) {
+          oldChannel.close();
+          connections.put(id, channel);
+        }
       } catch (IOException e) {
 
       }
     }
   }
+
   public static boolean sendOneMessage(String id, String message) {
     SocketChannel channel = (SocketChannel) connections.get(id);
     if (null == channel) {

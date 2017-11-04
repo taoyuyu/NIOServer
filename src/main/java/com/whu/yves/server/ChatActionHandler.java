@@ -47,10 +47,9 @@ public class ChatActionHandler extends ActionHandler {
              * 目标用户在线则直接转发
              * 目标用户离线则写入MessagePool
              * */
-            shortMessage(parser, channel);
+            shortMessage(parser);
             break;
         }
-//
       } else {
         channel.close();
       }
@@ -85,7 +84,8 @@ public class ChatActionHandler extends ActionHandler {
     channel.write(ByteBuffer.wrap(MessagePackager.responseHeartBeat(id).getBytes()));
   }
 
-  private void shortMessage(Parser parser, SocketChannel channel) throws IOException {
-    channel.write(ByteBuffer.wrap(("client id => " + channel.hashCode() + "\n").getBytes()));
+  private void shortMessage(Parser parser) throws IOException {
+    String target = parser.getMessageTarget();
+    Connections.sendOneMessage(target, parser.getMessage());
   }
 }

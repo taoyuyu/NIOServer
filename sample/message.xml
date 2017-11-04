@@ -1,11 +1,17 @@
 <messages>
-  <body type="heart_beat">
-    <content> </content>
-  </body>
+  <message>
+    <body type="identify" id="Leon" />
+  </message>
 
-  <body type="short_message" id="Leon">
-    <target>AdaWang</target>
-    <content>this is a message</content>
-    <time>1509534484</time>
-  </body>
+  <message>
+    <body type="heart_beat" />
+  </message>
+
+  <message>
+    <body type="short_message" id="Leon">
+      <target>AdaWang</target>
+      <content>this is a message</content>
+      <time>1509534484</time>
+    </body>
+  </message>
 </messages>

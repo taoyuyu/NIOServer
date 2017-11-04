@@ -16,8 +16,10 @@ public class Parser {
 
   private static Logger LOG = Logger.getLogger(Parser.class);
   private Document document = null;
+  private String message;
 
   public Parser(String message) {
+    this.message = message;
     StringReader reader = new StringReader(message);
     InputSource source = new InputSource(reader);
     SAXBuilder builder = new SAXBuilder();
@@ -71,6 +73,10 @@ public class Parser {
     Element root = document.getRootElement();
     String id = root.getChild("body").getAttributeValue("id");
     return id;
+  }
+
+  public String getMessage() {
+    return this.message;
   }
 
 }

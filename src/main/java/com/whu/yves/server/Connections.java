@@ -35,6 +35,19 @@ public class Connections {
     }
   }
 
+  public static boolean checkConnection(String id, SelectableChannel channel) {
+    SelectableChannel checkedChannel = connections.get(id);
+    if (checkedChannel == null) {
+      LOG.info(String.format("user id: %s unchecked", id));
+      return false;
+    }
+    if (checkedChannel != channel) {
+      LOG.info(String.format("user id: %s check failed", id));
+      return false;
+    }
+    return true;
+  }
+
   public static boolean sendOneMessage(String id, String message) {
     SocketChannel channel = (SocketChannel) connections.get(id);
     if (null == channel) {
@@ -52,15 +65,11 @@ public class Connections {
   }
 
   public static void closeOneConnection(String id, SelectableChannel channel) {
-    if (connections.get(id) == channel) {
-      try {
-        channel.close();
-        connections.remove(id);
-      } catch (IOException e) {
-        
-      }
-    } else {
-      LOG.error("close connection failed : id = " + id);
+    try {
+      channel.close();
+      connections.remove(id);
+    } catch (IOException e) {
+
     }
   }
 }

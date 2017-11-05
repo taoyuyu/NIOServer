@@ -50,10 +50,11 @@ public class ChatActionHandler extends ActionHandler {
              * 目标用户在线则直接转发
              * 目标用户离线则写入MessagePool
              * */
-            shortMessage(parser);
+            shortMessage(parser, channel);
             break;
           case CLOSE_CONNECTION:
-            Connections.closeOneConnection(parser.getID(), channel);
+            closeConnection(parser, channel);
+            break;
           default:
             LOG.error("Undefined message type");
         }
@@ -90,11 +91,22 @@ public class ChatActionHandler extends ActionHandler {
     channel.write(ByteBuffer.wrap(MessagePackager.responseHeartBeat(id).getBytes()));
   }
 
-  private void shortMessage(Parser parser) throws IOException {
+  private void shortMessage(Parser parser, SocketChannel channel) throws IOException {
+    if (! Connections.checkConnection(parser.getID(), channel)) {
+      return;
+    }
     String target = parser.getMessageTarget();
     if (!Connections.sendOneMessage(target, parser.getMessage())) {
       MessagePool.addOneMessage(target, parser.getMessage());
     }
+  }
+
+  private void closeConnection(Parser parser, SocketChannel channel) {
+    String id = parser.getID();
+    if (! Connections.checkConnection(id, channel)) {
+      return;
+    }
+    Connections.closeOneConnection(id, channel);
   }
 
 }

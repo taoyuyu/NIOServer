@@ -8,7 +8,6 @@ import org.junit.Test;
 public class TestMessagePool {
   @Test
   public void testPool() {
-    MessagePool.init();
     MessagePool.addOneMessage("taoyu", "this is a message1");
     MessagePool.addOneMessage("taoyu", "this is a message2");
     String message;

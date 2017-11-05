@@ -7,19 +7,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MessagePool {
 
-  private static ConcurrentHashMap<String, MessageQueue> messagePool = null;
+  private static ConcurrentHashMap<String, MessageQueue> messagePool = new ConcurrentHashMap<>();
 
   private MessagePool() {
-  }
-
-  public static void init() {
-    if (messagePool == null) {
-      synchronized (ConcurrentHashMap.class) {
-        if (messagePool == null) {
-          messagePool = new ConcurrentHashMap<>();
-        }
-      }
-    }
   }
 
   public static String getOneMessageByID(String id) {

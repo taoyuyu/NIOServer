@@ -12,15 +12,13 @@ import org.apache.log4j.Logger;
  */
 public class Main {
   private static Logger LOG = Logger.getLogger(Main.class);
+  private static int N_THREAD = 2;
+  private static int PORT = 7682;
   public static void main(String[] args) {
-    int nThread = 2;
     //创建推送线程
-    ThreadPoolService.initPool(nThread);
-    LOG.info("Thread Pool size: " + nThread);
-    //初始化消息池
-    MessagePool.init();
-    LOG.info("Start message pool succeed");
+    ThreadPoolService.initPool(N_THREAD);
+    LOG.info("Thread Pool size: " + N_THREAD);
     //开启NIOServer服务
-    new ChatActionHandler(SelectorFactory.getSelector(7682)).listen();
+    new ChatActionHandler(SelectorFactory.getSelector(PORT)).listen();
   }
 }

@@ -61,8 +61,10 @@ public class ChatActionHandler extends ActionHandler {
       } else {
         channel.close();
       }
-    } catch (IOException | RuntimeException e) {
+    } catch (IOException e) {
       LOG.error(e.getMessage());
+    } catch (RuntimeException e) {
+
     }
   }
 

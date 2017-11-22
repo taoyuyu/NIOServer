@@ -58,7 +58,14 @@ public class Connections {
       channel.write(ByteBuffer.wrap((message).getBytes()));
     } catch (IOException ioe) {
       LOG.info(String.format("user %s is offline", id));
-      connections.remove(id);
+      try {
+        channel.close();
+      } catch (IOException ioe1) {
+        LOG.error("close channel error: id = " + id);
+      } finally {
+        connections.remove(id);
+      }
+
       return false;
     }
     return true;

@@ -13,14 +13,11 @@ import org.apache.log4j.Logger;
 /**
  * Created by yutao on 17/11/22.
  */
-public class MessageHandleTask implements Runnable {
+public class MessageHandleTask extends HandleTask {
   private static Logger LOG = Logger.getLogger(MessageHandleTask.class);
-  private SocketChannel channel = null;
-  private ByteBuffer buffer = null;
 
   public MessageHandleTask(SocketChannel channel, ByteBuffer buffer) {
-    this.channel = channel;
-    this.buffer = buffer;
+    super(channel, buffer);
   }
 
   @Override
@@ -41,10 +38,6 @@ public class MessageHandleTask implements Runnable {
           break;
         case SHORT_MESSAGE:
           // 查询消息目标用户, 转发消息. 用户离线/在线
-          /**
-           * 目标用户在线则直接转发
-           * 目标用户离线则写入MessagePool
-           * */
           shortMessage(parser, channel);
           break;
         case CLOSE_CONNECTION:

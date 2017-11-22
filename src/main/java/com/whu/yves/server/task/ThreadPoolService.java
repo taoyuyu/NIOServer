@@ -33,5 +33,8 @@ public class ThreadPoolService {
   public static Future<?> submit(Callable task) {
     return fixedExecutorServices.submit(task);
   }
+  public static void shutdown() {
+    fixedExecutorServices.shutdown();
+  }
 
 }

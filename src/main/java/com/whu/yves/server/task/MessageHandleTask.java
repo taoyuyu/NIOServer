@@ -25,7 +25,6 @@ public class MessageHandleTask implements Runnable {
 
   @Override
   public void run() {
-    LOG.info(String.format("thread %s executes the task", Thread.currentThread().getName()));
     try {
       LOG.info("write socket id: " + channel.socket().hashCode());
       String message = readByteBuffer(buffer);

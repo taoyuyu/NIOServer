@@ -65,7 +65,6 @@ public class Connections {
       } finally {
         connections.remove(id);
       }
-
       return false;
     }
     return true;
@@ -74,9 +73,10 @@ public class Connections {
   public static void closeOneConnection(String id, SelectableChannel channel) {
     try {
       channel.close();
-      connections.remove(id);
     } catch (IOException e) {
-
+      LOG.error("close closeOneConnection error: id = " + id);
+    } finally {
+      connections.remove(id);
     }
   }
 }

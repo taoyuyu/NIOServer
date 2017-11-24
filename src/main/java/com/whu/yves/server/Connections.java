@@ -26,11 +26,13 @@ public class Connections {
     } else {
       try {
         if (oldChannel != channel) {
+          // 强制下线
           oldChannel.close();
-          connections.put(id, channel);
         }
       } catch (IOException e) {
 
+      } finally {
+        connections.put(id, channel);
       }
     }
   }

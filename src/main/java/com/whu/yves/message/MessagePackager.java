@@ -12,11 +12,8 @@ import org.jdom.output.XMLOutputter;
  */
 public class MessagePackager {
   private MessagePackager(){}
-  public static String responseHeartBeat(String id) {
-    return String.format("<messages>\n"
-        + "  <body type=\"response_heart_beat\" id=\"%s\">\n"
-        + "  </body>\n"
-        + "</messages>", id);
+  public static String responseHeartBeat(Document document) {
+    return documentToString(document);
   }
 
   public static String responseReceiveMessage(Document document, boolean isReceived) {
@@ -26,6 +23,10 @@ public class MessagePackager {
     element.addContent(String.format("%b", isReceived));
     body.addContent(element);
 
+    return documentToString(document);
+  }
+
+  private static String documentToString(Document document) {
     Format format = Format.getPrettyFormat();
     format.setEncoding("UTF-8");
     XMLOutputter xmlout = new XMLOutputter(format);

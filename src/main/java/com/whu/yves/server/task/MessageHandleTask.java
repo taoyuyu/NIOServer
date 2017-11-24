@@ -76,7 +76,7 @@ public class MessageHandleTask extends HandleTask {
 
   private void heartBeat(Parser parser, SocketChannel channel) throws IOException {
     String id = parser.getID();
-    channel.write(ByteBuffer.wrap(MessagePackager.responseHeartBeat(id).getBytes()));
+    channel.write(ByteBuffer.wrap(MessagePackager.responseHeartBeat(parser.getDocument()).getBytes()));
   }
 
   private void shortMessage(Parser parser, SocketChannel channel) throws IOException {

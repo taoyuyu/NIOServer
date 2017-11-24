@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
  * Created by yutao on 17/11/22.
  */
 public class MessageHandleTask extends HandleTask {
+
   private static Logger LOG = Logger.getLogger(MessageHandleTask.class);
 
   public MessageHandleTask(SocketChannel channel, ByteBuffer buffer) {
@@ -79,18 +80,25 @@ public class MessageHandleTask extends HandleTask {
   }
 
   private void shortMessage(Parser parser, SocketChannel channel) throws IOException {
-    if (! Connections.checkConnection(parser.getID(), channel)) {
+    if (!Connections.checkConnection(parser.getID(), channel)) {
       return;
     }
     String target = parser.getMessageTarget();
-    if (!Connections.sendOneMessage(target, parser.getMessage())) {
-      MessagePool.addOneMessage(target, parser.getMessage());
+    if (!Connections.sendOneMessage(target, parser.toString())) {
+      // failed
+      MessagePool.addOneMessage(target, parser.toString());
+      channel.write(ByteBuffer
+          .wrap(MessagePackager.responseReceiveMessage(parser.getDocument(), false).getBytes()));
+    } else {
+      // succeed
+      channel.write(ByteBuffer
+          .wrap(MessagePackager.responseReceiveMessage(parser.getDocument(), true).getBytes()));
     }
   }
 
   private void closeConnection(Parser parser, SocketChannel channel) {
     String id = parser.getID();
-    if (! Connections.checkConnection(id, channel)) {
+    if (!Connections.checkConnection(id, channel)) {
       return;
     }
     Connections.closeOneConnection(id, channel);

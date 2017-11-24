@@ -1,11 +1,14 @@
 package com.whu.yves.protocal;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 import org.xml.sax.InputSource;
 import org.jdom.input.SAXBuilder;
 
@@ -77,8 +80,22 @@ public class Parser {
     return id;
   }
 
-  public String getMessage() {
-    return this.message;
+  public Document getDocument() {
+    return document;
+  }
+
+  @Override
+  public String toString() {
+    Format format = Format.getPrettyFormat();
+    format.setEncoding("UTF-8");// 设置xml文件的字符为UTF-8，解决中文问题
+    XMLOutputter xmlout = new XMLOutputter(format);
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    try {
+      xmlout.output(document, baos);
+      return baos.toString();
+    } catch (IOException ioe) {
+      return null;
+    }
   }
 
 }

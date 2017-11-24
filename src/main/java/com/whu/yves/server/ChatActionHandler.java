@@ -1,9 +1,5 @@
 package com.whu.yves.server;
 
-import com.whu.yves.message.MessagePackager;
-import com.whu.yves.message.MessagePool;
-import com.whu.yves.protocal.MessageType;
-import com.whu.yves.protocal.Parser;
 import com.whu.yves.server.task.MessageHandleTask;
 import com.whu.yves.server.task.ThreadPoolService;
 import java.io.IOException;
@@ -38,11 +34,7 @@ public class ChatActionHandler extends ActionHandler {
         channel.close();
       }
     } catch (IOException e) {
-
+      LOG.error("close channel error: " + e.getStackTrace());
     }
-
   }
-
-
-
 }

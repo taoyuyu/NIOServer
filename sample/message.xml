@@ -16,6 +16,14 @@
   </message>
 
   <message>
+    <body type="short_message" id="Leon">
+      <target>AdaWang</target>
+      <result>true</result>
+      <time>1509534484</time>
+    </body>
+  </message>
+
+  <message>
     <body type="close_connection" id="Leon" />
   </message>
 </messages>

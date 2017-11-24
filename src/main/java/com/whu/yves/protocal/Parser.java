@@ -28,10 +28,17 @@ public class Parser {
     SAXBuilder builder = new SAXBuilder();
     try {
       document = builder.build(source);
+      addTimeStamp();
     } catch (JDOMException | IOException e) {
       LOG.error("Parser xml message error: " + message);
       throw new RuntimeException("Parser xml message error: " + message);
     }
+  }
+
+  private void addTimeStamp() {
+    Element element = new Element("time");
+    element.addContent(String.valueOf(System.currentTimeMillis()));
+    document.getRootElement().addContent(element);
   }
 
   public MessageType getMessageType() {

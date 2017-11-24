@@ -18,6 +18,7 @@ public class MessagePackager {
 
   public static String responseReceiveMessage(Document document, boolean isReceived) {
     Element body = document.getRootElement().getChild("body");
+    body.setAttribute("type", "response");
     body.removeChild("content");
     Element element = new Element("result");
     element.addContent(String.format("%b", isReceived));

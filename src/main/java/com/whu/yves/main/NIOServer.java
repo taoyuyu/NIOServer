@@ -9,8 +9,8 @@ import org.apache.log4j.Logger;
 /**
  * Created by yutao on 17/9/13.
  */
-public class Main {
-  private static Logger LOG = Logger.getLogger(Main.class);
+public class NIOServer {
+  private static Logger LOG = Logger.getLogger(NIOServer.class);
   private static int N_THREAD = 2;
   private static int PORT = 7682;
   public static void main(String[] args) {

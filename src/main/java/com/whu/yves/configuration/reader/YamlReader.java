@@ -1,5 +1,6 @@
 package com.whu.yves.configuration.reader;
 
+import com.whu.yves.protocal.UtilStrings;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -21,11 +22,11 @@ public class YamlReader {
   }
 
   public Integer getPort() {
-    return (Integer) configuration.get("port");
+    return (Integer) configuration.get(UtilStrings.PORT);
   }
 
   public Integer getNThread() {
-    return (Integer) configuration.get("thread");
+    return (Integer) configuration.get(UtilStrings.N_THREAD);
   }
 
   @Override

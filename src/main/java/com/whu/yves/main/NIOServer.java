@@ -13,8 +13,7 @@ import org.apache.log4j.Logger;
 public class NIOServer {
   private static Logger LOG = Logger.getLogger(NIOServer.class);
   public static void main(String[] args) {
-    YamlReader reader = new YamlReader("conf/app.yaml");
-    System.out.println(reader.toString());
+    YamlReader reader = new YamlReader(args[0]);
     //创建服务线程
     ThreadPoolService.init(reader.getNThread());
     LOG.info("Thread Pool size: " + reader.getNThread());

@@ -7,6 +7,7 @@ public class UtilStrings {
   //配置文件
   public static String PORT = "port";
   public static String N_THREAD = "thread";
+  public static String HOSTS = "hosts";
 
   //通信包的类型;
   public static String HEART_BEAT = "heart_beat";

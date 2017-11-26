@@ -23,7 +23,7 @@ public class HttpPackager {
     if (uri.equals("/")) {
       status = 200;
       msg = "OK";
-      content = "<h1 align=\"center\">Welcome to NIOServer</h1>";
+      content = "<h1 align=\"center\">Welcome to IMServer</h1>";
 
     } else {
       status = 404;

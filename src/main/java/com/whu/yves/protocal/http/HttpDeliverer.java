@@ -1,4 +1,4 @@
-package com.whu.yves.server;
+package com.whu.yves.protocal.http;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 public class HttpDeliverer {
   private Logger LOG = Logger.getLogger(HttpDeliverer.class);
   private String request;
+  private String response;
   public HttpDeliverer(String request) {
     this.request = request;
   }
@@ -38,7 +39,8 @@ public class HttpDeliverer {
       while ((line=input.readLine())!=null) {
         sb.append(line+"\n");
       }
-      return sb.toString();
+      response = sb.toString();
+      return response;
     } finally {
       if (out != null) {
         out.close();
@@ -50,7 +52,16 @@ public class HttpDeliverer {
         socket.close();
       }
     }
-
   }
 
+  public int getStatusCode() {
+    int index1 = response.indexOf(' ');
+    if (index1 != -1) {
+      int index2 = response.indexOf(' ', index1+1);
+      if (index2 > index1) {
+        return Integer.parseInt(response.substring(index1+1, index2));
+      }
+    }
+    return -1;
+  }
 }

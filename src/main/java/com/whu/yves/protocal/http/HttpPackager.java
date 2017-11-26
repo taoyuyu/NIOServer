@@ -4,7 +4,6 @@ package com.whu.yves.protocal.http;
 * 打包http response
 * */
 import com.whu.yves.configuration.reader.YamlReader;
-import com.whu.yves.server.HttpDeliverer;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -37,7 +36,7 @@ public class HttpPackager {
       if (file.exists()) {
         content = readFile(file);
       } else {
-        if (deliverToRemoteServer()) {
+        if (deliverToRemoteServer() == 200) {
           return;
         }
         status = 404;
@@ -49,19 +48,20 @@ public class HttpPackager {
     response = String.format(template, status, msg, length, content);
   }
 
-  private boolean deliverToRemoteServer() {
+  private int deliverToRemoteServer() {
     ArrayList<String> hosts = YamlReader.getHosts();
     HttpDeliverer deliverer = new HttpDeliverer(this.request);
     for (String host : hosts) {
       try {
         response = deliverer.deliver(host);
+        int status = deliverer.getStatusCode();
         LOG.info(String.format("response from host: %s => %s", host, response));
-        return true;
+        return status;
       } catch (IOException ioe) {
 
       }
     }
-    return false;
+    return 500;
   }
 
 

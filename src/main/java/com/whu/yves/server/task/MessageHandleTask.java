@@ -1,6 +1,7 @@
 package com.whu.yves.server.task;
 
-import com.whu.yves.message.MessagePackager;
+import com.whu.yves.protocal.http.HttpPackager;
+import com.whu.yves.protocal.xml.XMLPackager;
 import com.whu.yves.message.MessagePool;
 import com.whu.yves.protocal.http.HttpParser;
 import com.whu.yves.protocal.xml.MessageType;
@@ -50,27 +51,16 @@ public class MessageHandleTask extends HandleTask {
           default:
             LOG.error("Undefined message type");
         }
-      } else {
-        HttpParser httpParser = new HttpParser(message);
-        if (httpParser.check()) {
-          httpParser.parse();
-          String uri = httpParser.getUri();
-          if (uri.equals("/")) {
-            channel.write(ByteBuffer.wrap(("HTTP/1.1 200 File Not Found\r\n" +
-                "Content-Type: text/html\r\n" +
-                "Content-Length: 23\r\n" +
-                "\r\n" +
-                "<h1>Welcome to NIOServer</h1>").getBytes()));
-          } else {
-            channel.write(ByteBuffer.wrap(("HTTP/1.1 404 File Not Found\r\n" +
-                "Content-Type: text/html\r\n" +
-                "Content-Length: 23\r\n" +
-                "\r\n" +
-                "<h1>ERROR:File Not Found</h1>").getBytes()));
-          }
-          channel.close();
-        }
+        return;
       }
+      HttpParser httpParser = new HttpParser(message);
+      if (httpParser.check()) {
+        httpParser.parse();
+        channel.write(ByteBuffer.wrap(new HttpPackager(httpParser).getResponse().getBytes()));
+        channel.close();
+        return;
+      }
+
     } catch (IOException e) {
       LOG.error(e.getMessage());
     }
@@ -99,7 +89,7 @@ public class MessageHandleTask extends HandleTask {
   private void heartBeat(XMLParser parser, SocketChannel channel) throws IOException {
     String id = parser.getID();
     channel
-        .write(ByteBuffer.wrap(MessagePackager.responseHeartBeat(parser.getDocument()).getBytes()));
+        .write(ByteBuffer.wrap(XMLPackager.responseHeartBeat(parser.getDocument()).getBytes()));
   }
 
   private void shortMessage(XMLParser parser, SocketChannel channel) throws IOException {
@@ -111,11 +101,11 @@ public class MessageHandleTask extends HandleTask {
       // failed
       MessagePool.addOneMessage(target, parser.toString());
       channel.write(ByteBuffer
-          .wrap(MessagePackager.responseReceiveMessage(parser.getDocument(), false).getBytes()));
+          .wrap(XMLPackager.responseReceiveMessage(parser.getDocument(), false).getBytes()));
     } else {
       // succeed
       channel.write(ByteBuffer
-          .wrap(MessagePackager.responseReceiveMessage(parser.getDocument(), true).getBytes()));
+          .wrap(XMLPackager.responseReceiveMessage(parser.getDocument(), true).getBytes()));
     }
   }
 

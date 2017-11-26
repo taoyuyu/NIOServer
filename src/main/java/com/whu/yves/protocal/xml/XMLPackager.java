@@ -1,4 +1,4 @@
-package com.whu.yves.message;
+package com.whu.yves.protocal.xml;
 
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
@@ -10,8 +10,8 @@ import org.jdom.output.XMLOutputter;
 /**
  * Created by yutao on 17/11/2.
  */
-public class MessagePackager {
-  private MessagePackager(){}
+public class XMLPackager {
+  private XMLPackager(){}
   public static String responseHeartBeat(Document document) {
     return documentToString(document);
   }

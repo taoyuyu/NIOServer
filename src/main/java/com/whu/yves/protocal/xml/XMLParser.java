@@ -34,7 +34,6 @@ public class XMLParser extends Parser {
     try {
       document = builder.build(source);
     } catch (JDOMException | IOException e) {
-      LOG.error("Parser xml message error: " + message);
       return false;
     }
     return true;

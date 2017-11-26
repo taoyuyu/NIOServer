@@ -16,10 +16,10 @@ public class HttpPackager {
   private String request = null;
   private String response = null;
   private static String WEB_ROOT = System.getProperty("user.dir") + File.separator + "static";
-  private static String template = "HTTP/1.1 %d %s\r\n" +
-      "Content-Type: text/html\r\n" +
-      "Content-Length: %d\r\n" +
-      "\r\n" +
+  private static String template = "HTTP/1.1 %d %s\n" +
+      "Content-Type: text/html\n" +
+      "Content-Length: %d\n" +
+      "\n" +
       "%s";
 
   public HttpPackager(RequestParser parser) {
@@ -30,7 +30,7 @@ public class HttpPackager {
     String content;
 
     if ("/".equals(parser.getUri())) {
-      content = readFile(new File(WEB_ROOT+File.separator+"index.html"));;
+      content = readFile(new File(WEB_ROOT+File.separator+"index.html"));
     } else {
       File file = new File(WEB_ROOT, parser.getUri());
       if (file.exists()) {

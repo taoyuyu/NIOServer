@@ -3,7 +3,7 @@ package com.whu.yves.server.task;
 import com.whu.yves.protocal.http.HttpPackager;
 import com.whu.yves.protocal.xml.XMLPackager;
 import com.whu.yves.message.MessagePool;
-import com.whu.yves.protocal.http.HttpParser;
+import com.whu.yves.protocal.http.RequestParser;
 import com.whu.yves.protocal.xml.MessageType;
 import com.whu.yves.protocal.xml.XMLParser;
 import com.whu.yves.server.Connections;
@@ -53,10 +53,10 @@ public class MessageHandleTask extends HandleTask {
         }
         return;
       }
-      HttpParser httpParser = new HttpParser(message);
-      if (httpParser.check()) {
-        httpParser.parse();
-        channel.write(ByteBuffer.wrap(new HttpPackager(httpParser).getResponse().getBytes()));
+      RequestParser requestParser = new RequestParser(message);
+      if (requestParser.check()) {
+        requestParser.parse();
+        channel.write(ByteBuffer.wrap(new HttpPackager(requestParser).getResponse().getBytes()));
         channel.close();
         return;
       }

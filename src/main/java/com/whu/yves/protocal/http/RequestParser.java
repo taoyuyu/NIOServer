@@ -2,10 +2,10 @@ package com.whu.yves.protocal.http;
 
 import com.whu.yves.protocal.Parser;
 
-public class HttpParser extends Parser {
+public class RequestParser extends Parser {
   private String uri = null;
   private String method = null;
-  public HttpParser(String message) {
+  public RequestParser(String message) {
     super(message);
   }
 
@@ -40,6 +40,10 @@ public class HttpParser extends Parser {
 
   public String getUri() {
     return uri;
+  }
+
+  public String getRequest() {
+    return this.message;
   }
 
   public String getMethod() {

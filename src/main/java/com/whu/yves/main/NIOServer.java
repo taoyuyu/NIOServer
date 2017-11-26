@@ -13,11 +13,11 @@ import org.apache.log4j.Logger;
 public class NIOServer {
   private static Logger LOG = Logger.getLogger(NIOServer.class);
   public static void main(String[] args) {
-    YamlReader reader = new YamlReader(args[0]);
+    YamlReader.prepare(args[0]);
     //创建服务线程
-    ThreadPoolService.init(reader.getNThread());
-    LOG.info("Thread Pool size: " + reader.getNThread());
+    ThreadPoolService.init(YamlReader.getNThread());
+    LOG.info("Thread Pool size: " + YamlReader.getNThread());
     //开启NIOServer服务
-    new ChatActionHandler(SelectorFactory.getSelector(reader.getPort())).listen();
+    new ChatActionHandler(SelectorFactory.getSelector(YamlReader.getPort())).listen();
   }
 }

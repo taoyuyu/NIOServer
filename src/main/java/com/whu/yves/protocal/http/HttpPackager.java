@@ -56,6 +56,9 @@ public class HttpPackager {
         response = deliverer.deliver(host);
         int status = deliverer.getStatusCode();
         LOG.info(String.format("response from host: %s => %s", host, response));
+        if (status == 404) {
+          continue;
+        }
         return status;
       } catch (IOException ioe) {
 

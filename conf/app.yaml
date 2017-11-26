@@ -1,5 +1,5 @@
 port: 7682
 thread: 2
 hosts:
- - '123.207.4.30:7681'
-
+ - 'localhost:7681'
+ - 'yvestao:7681'

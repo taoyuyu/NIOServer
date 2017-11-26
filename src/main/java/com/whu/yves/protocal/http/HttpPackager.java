@@ -24,7 +24,7 @@ public class HttpPackager {
       "%s";
 
   public HttpPackager(RequestParser parser) {
-    this.request = parser.getRequest();
+    this.request = parser.getRequest()+"\n";
     int status = 200;
     String msg = "OK";
     int length;
@@ -55,6 +55,7 @@ public class HttpPackager {
     for (String host : hosts) {
       try {
         response = deliverer.deliver(host);
+        LOG.info(String.format("response from host: %s => %s", host, response));
         return true;
       } catch (IOException ioe) {
 
@@ -78,7 +79,6 @@ public class HttpPackager {
         sb.append(line);
       }
     } catch (IOException e) {
-      e.printStackTrace();
       return null;
     } finally {
       if (reader != null) {

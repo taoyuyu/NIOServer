@@ -2,9 +2,9 @@ package com.whu.yves.server.task;
 
 import com.whu.yves.message.MessagePackager;
 import com.whu.yves.message.MessagePool;
+import com.whu.yves.protocal.http.HttpParser;
 import com.whu.yves.protocal.xml.MessageType;
 import com.whu.yves.protocal.xml.XMLParser;
-import com.whu.yves.protocal.Parser;
 import com.whu.yves.server.Connections;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -27,31 +27,52 @@ public class MessageHandleTask extends HandleTask {
     try {
       LOG.info("write socket id: " + channel.socket().hashCode());
       String message = readByteBuffer(buffer);
-      XMLParser parser = new XMLParser(message);
-      MessageType type = parser.getMessageType();
-      switch (type) {
-        case IDENTIFY:
-          // 获取用户id, 根据id在MessagePool中读取历史消息, 回写消息
-          identify(parser, channel);
-          break;
-        case HEART_BEAT:
-          // 回复收到消息
-          heartBeat(parser, channel);
-          break;
-        case SHORT_MESSAGE:
-          // 查询消息目标用户, 转发消息. 用户离线/在线
-          shortMessage(parser, channel);
-          break;
-        case CLOSE_CONNECTION:
-          closeConnection(parser, channel);
-          break;
-        default:
-          LOG.error("Undefined message type");
+      XMLParser xmlParser = new XMLParser(message);
+      if (xmlParser.check()) {
+        xmlParser.parse();
+        MessageType type = xmlParser.getMessageType();
+        switch (type) {
+          case IDENTIFY:
+            // 获取用户id, 根据id在MessagePool中读取历史消息, 回写消息
+            identify(xmlParser, channel);
+            break;
+          case HEART_BEAT:
+            // 回复收到消息
+            heartBeat(xmlParser, channel);
+            break;
+          case SHORT_MESSAGE:
+            // 查询消息目标用户, 转发消息. 用户离线/在线
+            shortMessage(xmlParser, channel);
+            break;
+          case CLOSE_CONNECTION:
+            closeConnection(xmlParser, channel);
+            break;
+          default:
+            LOG.error("Undefined message type");
+        }
+      } else {
+        HttpParser httpParser = new HttpParser(message);
+        if (httpParser.check()) {
+          httpParser.parse();
+          String uri = httpParser.getUri();
+          if (uri.equals("/")) {
+            channel.write(ByteBuffer.wrap(("HTTP/1.1 200 File Not Found\r\n" +
+                "Content-Type: text/html\r\n" +
+                "Content-Length: 23\r\n" +
+                "\r\n" +
+                "<h1>Welcome to NIOServer</h1>").getBytes()));
+          } else {
+            channel.write(ByteBuffer.wrap(("HTTP/1.1 404 File Not Found\r\n" +
+                "Content-Type: text/html\r\n" +
+                "Content-Length: 23\r\n" +
+                "\r\n" +
+                "<h1>ERROR:File Not Found</h1>").getBytes()));
+          }
+          channel.close();
+        }
       }
     } catch (IOException e) {
       LOG.error(e.getMessage());
-    } catch (RuntimeException e) {
-
     }
   }
 
@@ -77,7 +98,8 @@ public class MessageHandleTask extends HandleTask {
 
   private void heartBeat(XMLParser parser, SocketChannel channel) throws IOException {
     String id = parser.getID();
-    channel.write(ByteBuffer.wrap(MessagePackager.responseHeartBeat(parser.getDocument()).getBytes()));
+    channel
+        .write(ByteBuffer.wrap(MessagePackager.responseHeartBeat(parser.getDocument()).getBytes()));
   }
 
   private void shortMessage(XMLParser parser, SocketChannel channel) throws IOException {

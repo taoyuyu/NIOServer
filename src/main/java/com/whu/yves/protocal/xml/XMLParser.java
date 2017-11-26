@@ -24,16 +24,25 @@ public class XMLParser extends Parser {
 
   public XMLParser(String message) {
     super(message);
+  }
+
+  @Override
+  public boolean check() {
     StringReader reader = new StringReader(message);
     InputSource source = new InputSource(reader);
     SAXBuilder builder = new SAXBuilder();
     try {
       document = builder.build(source);
-      addTimeStamp();
     } catch (JDOMException | IOException e) {
       LOG.error("Parser xml message error: " + message);
-      throw new RuntimeException("Parser xml message error: " + message);
+      return false;
     }
+    return true;
+  }
+
+  @Override
+  public void parse() {
+    addTimeStamp();
   }
 
   private void addTimeStamp() {

@@ -2,7 +2,8 @@ package com.whu.yves.server.task;
 
 import com.whu.yves.message.MessagePackager;
 import com.whu.yves.message.MessagePool;
-import com.whu.yves.protocal.MessageType;
+import com.whu.yves.protocal.xml.MessageType;
+import com.whu.yves.protocal.xml.XMLParser;
 import com.whu.yves.protocal.Parser;
 import com.whu.yves.server.Connections;
 import java.io.IOException;
@@ -26,7 +27,7 @@ public class MessageHandleTask extends HandleTask {
     try {
       LOG.info("write socket id: " + channel.socket().hashCode());
       String message = readByteBuffer(buffer);
-      Parser parser = new Parser(message);
+      XMLParser parser = new XMLParser(message);
       MessageType type = parser.getMessageType();
       switch (type) {
         case IDENTIFY:
@@ -65,7 +66,7 @@ public class MessageHandleTask extends HandleTask {
     return sb.toString();
   }
 
-  private void identify(Parser parser, SocketChannel channel) throws IOException {
+  private void identify(XMLParser parser, SocketChannel channel) throws IOException {
     String id = parser.getID();
     Connections.putOneConnection(id, channel);
     String message;
@@ -74,12 +75,12 @@ public class MessageHandleTask extends HandleTask {
     }
   }
 
-  private void heartBeat(Parser parser, SocketChannel channel) throws IOException {
+  private void heartBeat(XMLParser parser, SocketChannel channel) throws IOException {
     String id = parser.getID();
     channel.write(ByteBuffer.wrap(MessagePackager.responseHeartBeat(parser.getDocument()).getBytes()));
   }
 
-  private void shortMessage(Parser parser, SocketChannel channel) throws IOException {
+  private void shortMessage(XMLParser parser, SocketChannel channel) throws IOException {
     if (!Connections.checkConnection(parser.getID(), channel)) {
       return;
     }
@@ -96,7 +97,7 @@ public class MessageHandleTask extends HandleTask {
     }
   }
 
-  private void closeConnection(Parser parser, SocketChannel channel) {
+  private void closeConnection(XMLParser parser, SocketChannel channel) {
     String id = parser.getID();
     if (!Connections.checkConnection(id, channel)) {
       return;

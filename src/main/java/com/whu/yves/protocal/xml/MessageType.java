@@ -1,4 +1,4 @@
-package com.whu.yves.protocal;
+package com.whu.yves.protocal.xml;
 
 /**
  * Created by yutao on 17/9/14.

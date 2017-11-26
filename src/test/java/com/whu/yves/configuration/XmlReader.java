@@ -1,6 +1,6 @@
 package com.whu.yves.configuration;
 
-import com.whu.yves.protocal.Parser;
+import com.whu.yves.protocal.xml.XMLParser;
 import org.junit.Test;
 
 /**
@@ -15,7 +15,7 @@ public class XmlReader {
         + "    <content>this is a message</content>\n"
         + "  </body>\n"
         + "</messages>";
-    Parser parser = new Parser(message);
+    XMLParser parser = new XMLParser(message);
     System.out.println(parser.getMessageType());
     System.out.println(parser.getMessageTarget());
     System.out.println(parser.getMessageContent());

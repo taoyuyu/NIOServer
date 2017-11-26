@@ -19,12 +19,13 @@ public class HttpServer
   public static final String WEB_ROOT = System.getProperty("user.dir")+File.separator+"webroot";
   // shutdown command
   private static final String SHUTDOWN_COMMAND = "/SHUTDOWN";
-  // the shutdown command received
+  // the shutdown command receiveds
   private boolean shutdown = false;
 
   public static void main(String[] args)
   {
     HttpServer server = new HttpServer();
+    System.out.println(WEB_ROOT);
     server.await();
   }
 

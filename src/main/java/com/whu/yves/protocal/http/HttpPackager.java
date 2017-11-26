@@ -28,7 +28,7 @@ public class HttpPackager {
     } else {
       status = 404;
       msg = "File Not Found";
-      content = "<h1 align=\"center\">Error: File Not Found</h1>";
+      content = "";
     }
     length = content.length();
   }

@@ -7,6 +7,8 @@ import org.junit.Test;
 public class TestHttpDeliverer {
   @Test
   public void testDeliverer() throws IOException {
+    //     String request = "GET /MyBlog/home_v352iewPhoto?id=11 HTTP/1.1\n"
+
     String request = "GET /sample HTTP/1.1\n"
         + "Host: 127.0.0.1:8080\n"
         + "Connection: keep-alive\n"
@@ -16,10 +18,12 @@ public class TestHttpDeliverer {
         + "Accept-Encoding: gzip, deflate, br\n"
         + "Accept-Language: zh-CN,zh;q=0.9,ja;q=0.8,en;q=0.7\n"
         + "Cookie: Pycharm-cbaa752b=53853178-5118-41da-8327-b9e9393e86dc; Pycharm-cbaa752c=ae054395-b5b3-4899-a4ff-348cc5ec4024\n"
-        + "\r\n\r\n";
+        + "\r\n"
+        + "\r\n";
     HttpDeliverer deliverer = new HttpDeliverer(request);
     System.out.println(deliverer.deliver("123.207.4.30:7681"));
-    System.out.println(deliverer.getStatusCode());
+    System.out.println("statusCode : " + deliverer.getStatusCode());
+
   }
 }
 

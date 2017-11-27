@@ -7,9 +7,12 @@ import java.net.Socket;
 import org.apache.log4j.Logger;
 
 public class HttpDeliverer {
+
   private Logger LOG = Logger.getLogger(HttpDeliverer.class);
   private String request;
   private String response;
+  private ResponseParser parser;
+
   public HttpDeliverer(String request) {
     this.request = request;
   }
@@ -24,10 +27,6 @@ public class HttpDeliverer {
     String[] parms = host.split(":");
     try {
       socket = new Socket(parms[0], Integer.valueOf(parms[1]));
-      if (!socket.isConnected()) {
-        LOG.info("connect failed");
-        throw new IOException();
-      }
       //向后台服务器组发送数据
       out = new DataOutputStream(socket.getOutputStream());
       out.write(request.getBytes());
@@ -36,8 +35,22 @@ public class HttpDeliverer {
       input = new DataInputStream(socket.getInputStream());
       StringBuilder sb = new StringBuilder();
       String line;
-      while ((line=input.readLine())!=null) {
-        sb.append(line+"\n");
+      boolean tag = false;
+      while ((line = input.readLine()) != null) {
+        sb.append(line);
+        sb.append("\n");
+        if (!tag && line.equals("")) {
+          tag = true;
+          parser = new ResponseParser(sb.toString());
+          parser.parse();
+          if (parser.getStatusCode() != 200) {
+            break;
+          }
+        }
+
+        if (parser != null && sb.length() - parser.getHeaderLength() >= parser.getContentLength()) {
+          break;
+        }
       }
       response = sb.toString();
       return response;
@@ -55,13 +68,6 @@ public class HttpDeliverer {
   }
 
   public int getStatusCode() {
-    int index1 = response.indexOf(' ');
-    if (index1 != -1) {
-      int index2 = response.indexOf(' ', index1+1);
-      if (index2 > index1) {
-        return Integer.parseInt(response.substring(index1+1, index2));
-      }
-    }
-    return -1;
+    return parser.getStatusCode();
   }
 }

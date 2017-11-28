@@ -2,4 +2,5 @@
 
 `IM(Instant Messaging)`  
 `Web Application`  
-`Push Notification`
+`Push Notification`  
+`Proxy`

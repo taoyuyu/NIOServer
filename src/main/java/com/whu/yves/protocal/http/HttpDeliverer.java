@@ -1,9 +1,13 @@
 package com.whu.yves.protocal.http;
 
-import java.io.DataInputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
+import org.apache.commons.codec.Charsets;
 import org.apache.log4j.Logger;
 
 public class HttpDeliverer {
@@ -21,22 +25,27 @@ public class HttpDeliverer {
     LOG.info("host: " + host);
     LOG.info("deliver request: " + request);
     Socket socket = null;
-    DataInputStream input = null;
-    DataOutputStream out = null;
+    InputStreamReader input = null;
+    BufferedReader br = null;
+    OutputStreamWriter out = null;
+    BufferedWriter bw = null;
 
     String[] parms = host.split(":");
     try {
       socket = new Socket(parms[0], Integer.valueOf(parms[1]));
       //向后台服务器组发送数据
-      out = new DataOutputStream(socket.getOutputStream());
-      out.write(request.getBytes());
+      out = new OutputStreamWriter(socket.getOutputStream(), Charsets.UTF_8);
+      bw = new BufferedWriter(out);
+      bw.write(request);
+      bw.flush();
 
       //读取返回的数据
-      input = new DataInputStream(socket.getInputStream());
+      input = new InputStreamReader(socket.getInputStream(), Charsets.UTF_8);
+      br = new BufferedReader(input);
       StringBuilder sb = new StringBuilder();
       String line;
       boolean tag = false;
-      while ((line = input.readLine()) != null) {
+      while ((line = br.readLine()) != null) {
         sb.append(line);
         sb.append("\n");
         if (!tag && line.equals("")) {
@@ -48,15 +57,22 @@ public class HttpDeliverer {
           }
         }
 
-        if (parser != null && sb.length() - parser.getHeaderLength() >= parser.getContentLength()) {
+        if (parser != null && parser.getContentLength() > 0 && sb.length() - parser.getHeaderLength() >= parser.getContentLength()) {
           break;
         }
       }
       response = sb.toString();
       return response;
     } finally {
+      if (bw != null) {
+        bw.close();
+      }
       if (out != null) {
         out.close();
+      }
+
+      if (br != null) {
+        br.close();
       }
       if (input != null) {
         input.close();

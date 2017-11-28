@@ -2,11 +2,14 @@ package com.whu.yves.server;
 
 import com.whu.yves.protocal.http.HttpDeliverer;
 import java.io.IOException;
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 public class TestHttpDeliverer {
+  private static Logger LOG = Logger.getLogger(TestHttpDeliverer.class);
   @Test
   public void testDeliverer() throws IOException {
+
     //     String request = "GET /MyBlog/home_v352iewPhoto?id=11 HTTP/1.1\n"
 
     String request = "GET /sample HTTP/1.1\n"
@@ -21,9 +24,9 @@ public class TestHttpDeliverer {
         + "\r\n"
         + "\r\n";
     HttpDeliverer deliverer = new HttpDeliverer(request);
-    System.out.println(deliverer.deliver("123.207.4.30:7681"));
-    System.out.println("statusCode : " + deliverer.getStatusCode());
 
+    LOG.info(deliverer.deliver("123.207.4.30:7681"));
+    LOG.info("statusCode : " + deliverer.getStatusCode());
   }
 }
 

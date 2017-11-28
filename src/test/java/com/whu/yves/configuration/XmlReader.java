@@ -1,12 +1,14 @@
 package com.whu.yves.configuration;
 
 import com.whu.yves.protocal.xml.XMLParser;
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 /**
  * Created by yutao on 17/9/13.
  */
 public class XmlReader {
+  private static Logger LOG = Logger.getLogger(XMLParser.class);
   @Test
   public void testMessage() {
     String message = "<messages>\n"
@@ -16,8 +18,8 @@ public class XmlReader {
         + "  </body>\n"
         + "</messages>";
     XMLParser parser = new XMLParser(message);
-    System.out.println(parser.getMessageType());
-    System.out.println(parser.getMessageTarget());
-    System.out.println(parser.getMessageContent());
+    LOG.info(parser.getMessageType());
+    LOG.info(parser.getMessageTarget());
+    LOG.info(parser.getMessageContent());
   }
 }

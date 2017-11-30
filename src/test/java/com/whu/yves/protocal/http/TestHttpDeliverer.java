@@ -1,6 +1,5 @@
-package com.whu.yves.server;
+package com.whu.yves.protocal.http;
 
-import com.whu.yves.protocal.http.HttpDeliverer;
 import java.io.IOException;
 import org.apache.log4j.Logger;
 import org.junit.Test;

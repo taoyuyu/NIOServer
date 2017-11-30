@@ -2,6 +2,7 @@ package com.whu.yves.protocal.http;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -63,22 +64,12 @@ public class HttpDeliverer {
       response = sb.toString();
       return response;
     } finally {
-      if (bw != null) {
         bw.close();
-      }
-      if (out != null) {
         out.close();
-      }
 
-      if (br != null) {
         br.close();
-      }
-      if (input != null) {
         input.close();
-      }
-      if (socket != null) {
         socket.close();
-      }
     }
   }
 

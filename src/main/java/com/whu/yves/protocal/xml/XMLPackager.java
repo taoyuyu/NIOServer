@@ -36,7 +36,6 @@ public class XMLPackager {
       xmlout.output(document, bo);
       return bo.toString();
     } catch (IOException ioe) {
-      System.out.println("error");
       return null;
     }
   }

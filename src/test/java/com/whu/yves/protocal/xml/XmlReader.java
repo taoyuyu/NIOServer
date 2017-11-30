@@ -1,4 +1,4 @@
-package com.whu.yves.configuration;
+package com.whu.yves.protocal.xml;
 
 import com.whu.yves.protocal.xml.XMLParser;
 import org.apache.log4j.Logger;

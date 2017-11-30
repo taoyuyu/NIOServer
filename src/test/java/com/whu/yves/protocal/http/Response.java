@@ -1,4 +1,4 @@
-package com.whu.yves.http;
+package com.whu.yves.protocal.http;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.io.FileInputStream;

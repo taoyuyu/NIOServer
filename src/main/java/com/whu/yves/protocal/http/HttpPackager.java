@@ -23,7 +23,7 @@ public class HttpPackager {
       "%s";
 
   public HttpPackager(RequestParser parser) {
-    this.request = parser.getRequest()+"\n";
+    this.request = parser.getRequest();
     int status = 200;
     String msg = "OK";
     int length;

@@ -1,5 +1,6 @@
 package com.whu.yves.protocal;
 
+
 /**
  * Created by yutao on 17/9/14.
  */
@@ -8,6 +9,10 @@ public class UtilStrings {
   public static String PORT = "port";
   public static String N_THREAD = "thread";
   public static String HOSTS = "hosts";
+
+  //资源文件
+  public static String INDEX_PAGE = "index.html";
+  public static String ERROR_PAGE = "404.html";
 
   //通信包的类型;
   public static String HEART_BEAT = "heart_beat";

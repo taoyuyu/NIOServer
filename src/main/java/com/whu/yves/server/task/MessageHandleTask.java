@@ -1,6 +1,7 @@
 package com.whu.yves.server.task;
 
 import com.whu.yves.protocal.http.HttpPackager;
+import com.whu.yves.protocal.http.HttpProxy;
 import com.whu.yves.protocal.xml.XMLPackager;
 import com.whu.yves.message.MessagePool;
 import com.whu.yves.protocal.http.RequestParser;
@@ -55,15 +56,22 @@ public class MessageHandleTask extends HandleTask {
       }
       RequestParser requestParser = new RequestParser(message);
       if (requestParser.check()) {
-        requestParser.parse();
-        channel.write(ByteBuffer.wrap(new HttpPackager(requestParser).getResponse().getBytes()));
-        channel.close();
-        return;
+        proxyModel(requestParser, channel);
       }
-
     } catch (IOException e) {
       LOG.error(e.getMessage());
     }
+  }
+
+//  private void proxyModel(RequestParser requestParser, SocketChannel channel) throws IOException {
+//    requestParser.parse();
+//    channel.write(ByteBuffer.wrap(new HttpPackager(requestParser).getResponse().getBytes()));
+//    channel.close();
+//  }
+
+  private void proxyModel(RequestParser requestParser, SocketChannel channel) throws IOException {
+    requestParser.parse();
+    new HttpProxy(requestParser, channel);
   }
 
   private String readByteBuffer(ByteBuffer buffer) {

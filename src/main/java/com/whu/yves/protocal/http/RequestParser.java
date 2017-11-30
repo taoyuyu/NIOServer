@@ -6,7 +6,7 @@ public class RequestParser extends Parser {
   private String uri = null;
   private String method = null;
   public RequestParser(String message) {
-    super(message);
+    super(message+"\n");
   }
 
   @Override

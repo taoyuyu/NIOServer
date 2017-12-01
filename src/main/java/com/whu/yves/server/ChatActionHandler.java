@@ -25,6 +25,7 @@ public class ChatActionHandler extends ActionHandler {
   @Override
   protected void readAction(SelectionKey key) {
     SocketChannel channel = (SocketChannel) key.channel();
+    LOG.info(channel.socket().hashCode() + " read channel");
     ByteBuffer buffer = ByteBuffer.allocate(BYTE_BUFFER_SIZE);
     try {
       int count = channel.read(buffer);
@@ -34,7 +35,7 @@ public class ChatActionHandler extends ActionHandler {
         channel.close();
       }
     } catch (IOException e) {
-      LOG.error("close channel error: " + e.getStackTrace());
+      LOG.error("close channel error: " + e.getMessage());
     }
   }
 }

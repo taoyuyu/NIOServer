@@ -44,7 +44,6 @@ public class ActionHandler implements DefaultActionHandler {
       acceptAction(key);
     } else if (key.isReadable()) {
       // 读事件
-      LOG.info("read channel");
       readAction(key);
     } else if (key.isWritable()) {
       // 写事件

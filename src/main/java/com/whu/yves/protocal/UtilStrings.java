@@ -11,8 +11,8 @@ public class UtilStrings {
   public static String HOSTS = "hosts";
 
   //资源文件
-  public static String INDEX_PAGE = "index.html";
-  public static String ERROR_PAGE = "404.html";
+  public static String INDEX_PAGE = "/index.html";
+  public static String ERROR_PAGE = "/404.html";
 
   //通信包的类型;
   public static String HEART_BEAT = "heart_beat";

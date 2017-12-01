@@ -3,9 +3,8 @@ package com.whu.yves.protocal.http;
 
 import com.whu.yves.configuration.reader.YamlReader;
 import com.whu.yves.protocal.UtilStrings;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
@@ -13,16 +12,15 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 public class HttpProxy {
-  private static Logger LOG = Logger.getLogger(HttpProxy.class);
 
+  private static Logger LOG = Logger.getLogger(HttpProxy.class);
+  private byte[] data = null;
   private String request = null;
   private static String WEB_ROOT = System.getProperty("user.dir") + File.separator + "static";
   private static String template = "HTTP/1.1 %d %s\n" +
-      "Content-Type: text/html\n" +
+      "Content-Type: %s\n" +
       "Content-Length: %d\n" +
-      "\n" +
-      "%s";
-  private String content = "";
+      "\n";
 
   public HttpProxy(RequestParser parser, SocketChannel channel) throws IOException {
     this.request = parser.getRequest();
@@ -32,17 +30,32 @@ public class HttpProxy {
       localResource(UtilStrings.INDEX_PAGE, channel);
     } else {
       if (!deliverToRemoteHost(channel)) {
-        localResource(UtilStrings.ERROR_PAGE, channel);
+        localResource(uri, channel);
       }
     }
   }
 
-  private void localResource(String url, SocketChannel channel) throws IOException {
-    readFile(url);
+  private void localResource(String uri, SocketChannel channel) throws IOException {
+    LOG.info("read local resource => " + uri);
     int status = 200;
     String msg = "OK";
-    int length = content.length();
-    channel.write(ByteBuffer.wrap(String.format(template, status, msg, length, content).getBytes()));
+    String contentType = "text/html";
+
+    if (uri.toUpperCase().endsWith(".JPEG") || uri.toUpperCase().endsWith("JPG")) {
+      contentType = "image/jpeg";
+    }
+
+    if (!readFileByBytes(uri)) {
+      readFileByBytes(UtilStrings.ERROR_PAGE);
+      contentType = "text/html";
+      status = 404;
+      msg = "Not Found";
+    }
+
+    int length = data.length;
+    channel
+        .write(ByteBuffer.wrap(String.format(template, status, msg, contentType, length).getBytes()));
+    channel.write(ByteBuffer.wrap(data));
     channel.close();
   }
 
@@ -59,30 +72,33 @@ public class HttpProxy {
     return false;
   }
 
-  private boolean readFile(String uri) {
-    String filePath = WEB_ROOT+File.separator + uri;
+  private boolean readFileByBytes(String uri) {
+    String filePath = WEB_ROOT + uri;
     File file = new File(filePath);
-    StringBuilder sb = new StringBuilder();
-    BufferedReader reader = null;
+    if (!file.exists()) {
+      return false;
+    }
+
+    FileInputStream fis = null;
     try {
-      reader = new BufferedReader(new FileReader(file));
-      String line;
-      while ((line = reader.readLine()) != null) {
-        sb.append(line);
-      }
-    } catch (IOException e) {
-      LOG.error(String.format("File %s%s not found", filePath));
+      fis = new FileInputStream(file);
+      int size = fis.available();
+      data = new byte[size];
+      fis.read(data);
+      return true;
+    } catch (IOException fnfe) {
+      LOG.error(String.format("File %s not found", filePath));
+      LOG.error(fnfe.getMessage());
+      LOG.error(fnfe.getStackTrace());
       return false;
     } finally {
-      if (reader != null) {
-        try {
-          reader.close();
-        } catch (IOException e1) {
-          return false;
+      try {
+        if (fis != null) {
+          fis.close();
         }
+      } catch (IOException ioe) {
+        return false;
       }
     }
-    content = sb.toString();
-    return true;
   }
 }

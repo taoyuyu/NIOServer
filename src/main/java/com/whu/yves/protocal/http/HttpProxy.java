@@ -3,6 +3,9 @@ package com.whu.yves.protocal.http;
 
 import com.whu.yves.configuration.reader.YamlReader;
 import com.whu.yves.protocal.UtilStrings;
+import com.whu.yves.server.load.LoadBalance;
+import com.whu.yves.server.load.PollingLoadBalance;
+import com.whu.yves.server.load.WeightLoadBalance;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -62,14 +65,40 @@ public class HttpProxy {
   private boolean deliverToRemoteHost(SocketChannel channel) {
     ArrayList<String> hosts = YamlReader.getHosts();
     SocketPair socketPair = new SocketPair(channel);
-    for (String host : hosts) {
-      if (socketPair.connect(host)) {
-        if (socketPair.deliverRequest(request)) {
-          return true;
+
+    LoadBalance loadBalance;
+
+    //TODO 选择负载均衡算法
+    if (true) {
+      loadBalance = new PollingLoadBalance(hosts);
+    } else {
+      loadBalance = new WeightLoadBalance(hosts);
+    }
+
+    String firstHost = loadBalance.getNextHost();
+    if (socketPair.connect(firstHost)) {
+      if (!socketPair.deliverRequest(request)) {
+        return false;
+      }
+    } else {
+      String nextHost ;
+      while (true) {
+        nextHost = loadBalance.getNextHost();
+        if (nextHost.equals(firstHost)) {
+          return false;
+        } else {
+          if (socketPair.connect(nextHost)) {
+            if (!socketPair.deliverRequest(request)) {
+              return false;
+            } else {
+              return true;
+            }
+          }
         }
       }
     }
-    return false;
+
+    return true;
   }
 
   private boolean readFileByBytes(String uri) {

@@ -77,7 +77,7 @@ public class SocketPair {
             tag = true;
             parser = new ResponseParser(sb.toString());
             parser.parse();
-            if (parser.getStatusCode() != 200) {
+            if (parser.getStatusCode() > 300) {
               return false;
             }
             channel.write(ByteBuffer.wrap(sb.toString().getBytes()));

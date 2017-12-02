@@ -1,7 +1,6 @@
 port: 7682
 thread: 2
 hosts:
- - 'localhost:7681'
- - 'yvestao:7681'
- - 'xcfish.cn:80'
+ - 'ten1:7681'
+ - 'ten2:7681'
 

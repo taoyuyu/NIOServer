@@ -1,6 +1,8 @@
 package com.whu.yves.protocal.http;
 
 import com.whu.yves.protocal.Parser;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 public class RequestParser extends Parser {
   private String uri = null;
@@ -25,8 +27,15 @@ public class RequestParser extends Parser {
     index1 = message.indexOf(' ');
     if (index1 != -1) {
       index2 = message.indexOf(' ', index1 + 1);
-      if (index2 > index1)
+      if (index2 > index1) {
         uri = message.substring(index1 + 1, index2);
+        try {
+          uri = URLDecoder.decode(uri, "utf-8");
+        } catch (UnsupportedEncodingException uee) {
+
+        }
+      }
+
     }
   }
 

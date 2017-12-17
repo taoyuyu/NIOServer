@@ -21,6 +21,8 @@ Oracle Solaris
 
 ### Installation
 **Build from the source:**   
-> mvn install
+> cd NIOServer  
+> mvn install  
+
 
 

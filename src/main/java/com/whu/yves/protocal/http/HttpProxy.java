@@ -5,6 +5,7 @@ import com.whu.yves.configuration.reader.YamlReader;
 import com.whu.yves.protocal.UtilStrings;
 import com.whu.yves.server.load.LoadBalance;
 import com.whu.yves.server.load.PollingLoadBalance;
+import com.whu.yves.server.load.RandomLoadBalance;
 import com.whu.yves.server.load.WeightLoadBalance;
 import com.whu.yves.server.task.ThreadPoolService;
 import com.whu.yves.server.task.WatchTask;
@@ -73,12 +74,8 @@ public class HttpProxy {
     ArrayList<String> hosts = YamlReader.getHosts();
     SocketPair socketPair = new SocketPair(channel);
 
-    //TODO 选择负载均衡算法
-    if (true) {
-      loadBalance = new PollingLoadBalance(hosts);
-    } else {
-      loadBalance = new WeightLoadBalance(hosts);
-    }
+    // 初始化负载均衡算法
+    initLoadBalanceModel(hosts);
 
     String host;
     while ((host = loadBalance.getNextHost()) != null) {
@@ -96,6 +93,22 @@ public class HttpProxy {
       }
     }
     return false;
+  }
+
+  private void initLoadBalanceModel(ArrayList<String> hosts) {
+    if (loadBalance != null) {
+      return;
+    }
+    if (Boolean.TRUE.equals(YamlReader.getRandom())) {
+      loadBalance = new RandomLoadBalance(hosts);
+      LOG.info("random LoadBalance...");
+      return;
+    } else {
+      loadBalance = new PollingLoadBalance(hosts);
+      LOG.info("polling LoadBalance...");
+    }
+
+
   }
 
   private boolean readFileByBytes(String uri) {

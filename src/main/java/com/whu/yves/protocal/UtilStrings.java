@@ -9,6 +9,7 @@ public class UtilStrings {
   public static String PORT = "port";
   public static String N_THREAD = "thread";
   public static String HOSTS = "hosts";
+  public static String RAMDOM = "random";
 
   //系统配置
   public static long START = 5;

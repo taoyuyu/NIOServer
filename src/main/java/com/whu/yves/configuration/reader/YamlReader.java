@@ -41,5 +41,9 @@ public class YamlReader {
     return (ArrayList) configuration.get(UtilStrings.HOSTS);
   }
 
+  public static Boolean getRandom() {
+    return (Boolean) configuration.get(UtilStrings.RAMDOM);
+  }
+
 }
 

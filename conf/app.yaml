@@ -4,3 +4,4 @@ hosts:
  - 'ten1:7681'
  - 'ten2:7681'
 
+random: false

@@ -30,7 +30,7 @@ public class ThreadPoolService {
     }
   }
 
-  public static Future<?> submit(Runnable task, int start, int delay) {
+  public static Future<?> submit(Runnable task, long start, long delay) {
     return scheduledExecutorService.scheduleWithFixedDelay(task, start, delay, TimeUnit.SECONDS);
   }
 

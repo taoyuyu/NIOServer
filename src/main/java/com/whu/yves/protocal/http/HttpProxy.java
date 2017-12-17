@@ -91,35 +91,11 @@ public class HttpProxy {
       } else {
         loadBalance.removeOneHost(host);
         WatchTask watchTask = new WatchTask(host);
-        Future<?> future = ThreadPoolService.submit(watchTask, 5, 5);
+        Future<?> future = ThreadPoolService.submit(watchTask, UtilStrings.START, UtilStrings.DELAY);
         futureTasks.put(host, future);
       }
     }
     return false;
-
-//    String firstHost = loadBalance.getNextHost();
-//    if (socketPair.connect(firstHost)) {
-//      if (!socketPair.deliverRequest(request)) {
-//        return false;
-//      }
-//    } else {
-//      String nextHost;
-//      while (true) {
-//        nextHost = loadBalance.getNextHost();
-//        if (nextHost.equals(firstHost)) {
-//          return false;
-//        } else {
-//          if (socketPair.connect(nextHost)) {
-//            if (!socketPair.deliverRequest(request)) {
-//              return false;
-//            } else {
-//              return true;
-//            }
-//          }
-//        }
-//      }
-//    }
-//    return true;
   }
 
   private boolean readFileByBytes(String uri) {

@@ -10,6 +10,10 @@ public class UtilStrings {
   public static String N_THREAD = "thread";
   public static String HOSTS = "hosts";
 
+  //系统配置
+  public static long START = 5;
+  public static long DELAY = 5;
+
   //资源文件
   public static String INDEX_PAGE = "/index.html";
   public static String ERROR_PAGE = "/404.html";

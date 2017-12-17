@@ -7,11 +7,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class ThreadPoolService {
+public class ScheduledThreadPoolService {
 
   private static ScheduledExecutorService threadPool = null;
   private static Map<Integer, ScheduledFuture<?>> results = new HashMap<Integer, ScheduledFuture<?>>();
-  private ThreadPoolService() {
+  private ScheduledThreadPoolService() {
   }
 
   public static void initPool(int coreSize) {

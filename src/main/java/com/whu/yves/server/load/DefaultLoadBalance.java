@@ -9,4 +9,14 @@ public abstract class DefaultLoadBalance implements LoadBalance {
     this.hosts = hosts;
   }
 
+  @Override
+  public boolean removeOneHost(String host) {
+    return hosts.remove(host);
+  }
+
+  @Override
+  public void addOneHost(String host) {
+    hosts.add(host);
+  }
+
 }

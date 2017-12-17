@@ -16,6 +16,7 @@ public class SocketPair {
   private static Logger LOG = Logger.getLogger(SocketPair.class);
   private SocketChannel channel;
   private Socket server = null;
+  private String host = null;
 
   public SocketPair(SocketChannel channel) {
     this.channel = channel;
@@ -25,6 +26,7 @@ public class SocketPair {
     if (null == host) {
       return false;
     }
+    this.host = host;
     String address;
     int port;
     String[] parms = host.split(":");
@@ -42,6 +44,16 @@ public class SocketPair {
       return false;
     }
     return true;
+  }
+
+  public void closeServerConnection() {
+    if (server != null) {
+      try {
+        server.close();
+      } catch (IOException ioe) {
+        LOG.error(String.format("close connection to %s error", host));
+      }
+    }
   }
 
   public boolean deliverRequest(String request) {

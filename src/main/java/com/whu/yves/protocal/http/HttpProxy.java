@@ -6,17 +6,23 @@ import com.whu.yves.protocal.UtilStrings;
 import com.whu.yves.server.load.LoadBalance;
 import com.whu.yves.server.load.PollingLoadBalance;
 import com.whu.yves.server.load.WeightLoadBalance;
+import com.whu.yves.server.task.ThreadPoolService;
+import com.whu.yves.server.task.WatchTask;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 import org.apache.log4j.Logger;
 
 public class HttpProxy {
 
   private static Logger LOG = Logger.getLogger(HttpProxy.class);
+  public static LoadBalance loadBalance;
+  public static ConcurrentHashMap<String, Future> futureTasks = new ConcurrentHashMap<>();
   private byte[] data = null;
   private String request = null;
   private static String WEB_ROOT = System.getProperty("user.dir") + File.separator + "static";
@@ -57,7 +63,8 @@ public class HttpProxy {
 
     int length = data.length;
     channel
-        .write(ByteBuffer.wrap(String.format(template, status, msg, contentType, length).getBytes()));
+        .write(
+            ByteBuffer.wrap(String.format(template, status, msg, contentType, length).getBytes()));
     channel.write(ByteBuffer.wrap(data));
     channel.close();
   }
@@ -66,8 +73,6 @@ public class HttpProxy {
     ArrayList<String> hosts = YamlReader.getHosts();
     SocketPair socketPair = new SocketPair(channel);
 
-    LoadBalance loadBalance;
-
     //TODO 选择负载均衡算法
     if (true) {
       loadBalance = new PollingLoadBalance(hosts);
@@ -75,30 +80,46 @@ public class HttpProxy {
       loadBalance = new WeightLoadBalance(hosts);
     }
 
-    String firstHost = loadBalance.getNextHost();
-    if (socketPair.connect(firstHost)) {
-      if (!socketPair.deliverRequest(request)) {
-        return false;
-      }
-    } else {
-      String nextHost ;
-      while (true) {
-        nextHost = loadBalance.getNextHost();
-        if (nextHost.equals(firstHost)) {
-          return false;
+    String host;
+    while ((host = loadBalance.getNextHost()) != null) {
+      if (socketPair.connect(host)) {
+        if (socketPair.deliverRequest(request)) {
+          return true;
         } else {
-          if (socketPair.connect(nextHost)) {
-            if (!socketPair.deliverRequest(request)) {
-              return false;
-            } else {
-              return true;
-            }
-          }
+          return false;
         }
+      } else {
+        loadBalance.removeOneHost(host);
+        WatchTask watchTask = new WatchTask(host);
+        Future<?> future = ThreadPoolService.submit(watchTask, 5, 5);
+        futureTasks.put(host, future);
       }
     }
+    return false;
 
-    return true;
+//    String firstHost = loadBalance.getNextHost();
+//    if (socketPair.connect(firstHost)) {
+//      if (!socketPair.deliverRequest(request)) {
+//        return false;
+//      }
+//    } else {
+//      String nextHost;
+//      while (true) {
+//        nextHost = loadBalance.getNextHost();
+//        if (nextHost.equals(firstHost)) {
+//          return false;
+//        } else {
+//          if (socketPair.connect(nextHost)) {
+//            if (!socketPair.deliverRequest(request)) {
+//              return false;
+//            } else {
+//              return true;
+//            }
+//          }
+//        }
+//      }
+//    }
+//    return true;
   }
 
   private boolean readFileByBytes(String uri) {

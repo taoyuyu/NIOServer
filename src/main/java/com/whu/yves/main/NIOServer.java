@@ -22,5 +22,7 @@ public class NIOServer {
     HttpProxy.init();
     //开启NIOServer服务
     new ChatActionHandler(SelectorFactory.getSelector(YamlReader.getPort())).listen();
+    //关闭线程池
+    ThreadPoolService.shutdown();
   }
 }

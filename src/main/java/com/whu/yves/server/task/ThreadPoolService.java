@@ -40,6 +40,7 @@ public class ThreadPoolService {
     return scheduledExecutorService.submit(task);
   }
   public static void shutdown() {
+    LOG.info("ThreadPool shutdown");
     scheduledExecutorService.shutdown();
   }
 

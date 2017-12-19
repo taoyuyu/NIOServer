@@ -30,7 +30,8 @@ public class HttpProxy {
       "Content-Length: %d\n" +
       "\n";
 
-  private HttpProxy(){}
+  private HttpProxy() {
+  }
 
   public static void init() {
     // 初始化负载均衡算法
@@ -78,8 +79,6 @@ public class HttpProxy {
     ArrayList<String> hosts = YamlReader.getHosts();
     SocketPair socketPair = new SocketPair(channel);
 
-
-
     String host;
     while ((host = loadBalance.getNextHost()) != null) {
       if (socketPair.connect(host)) {
@@ -91,7 +90,8 @@ public class HttpProxy {
       } else {
         loadBalance.removeOneHost(host);
         WatchTask watchTask = new WatchTask(host);
-        Future<?> future = ThreadPoolService.submit(watchTask, UtilStrings.START, UtilStrings.DELAY);
+        Future<?> future = ThreadPoolService
+            .submit(watchTask, UtilStrings.START, UtilStrings.DELAY);
         futureTasks.put(host, future);
       }
     }
@@ -118,7 +118,7 @@ public class HttpProxy {
   }
 
   private static byte[] readFileByBytes(String uri) {
-    byte[] data = null;
+    byte[] data;
     String filePath = WEB_ROOT + uri;
     File file = new File(filePath);
     if (!file.exists()) {

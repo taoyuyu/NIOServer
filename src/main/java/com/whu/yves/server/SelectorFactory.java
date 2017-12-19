@@ -28,8 +28,8 @@ public class SelectorFactory {
             selector = Selector.open();
             init();
           } catch (IOException ioe) {
-            LOG.error(String.format("Open port %d failed", port));
-            throw new RuntimeException("selector init error");
+            LOG.error(ioe.getMessage());
+            return null;
           }
         }
       }

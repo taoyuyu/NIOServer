@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 public class ActionHandler implements DefaultActionHandler {
 
   private static Logger LOG = Logger.getLogger(ActionHandler.class);
-  private Selector selector = null;
+  private Selector selector;
 
   public ActionHandler(Selector selector) {
     this.selector = selector;
@@ -20,6 +20,9 @@ public class ActionHandler implements DefaultActionHandler {
 
   @Override
   public void listen() {
+    if(selector == null) {
+      return;
+    }
     try {
       while (true) {
         //调用会阻塞，直到有一个事件发生

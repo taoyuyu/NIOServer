@@ -63,7 +63,7 @@ public class ActionHandler implements DefaultActionHandler {
       channel.configureBlocking(false);
       channel.register(selector, SelectionKey.OP_READ);
     } catch (IOException ioe) {
-      LOG.info(ioe.getStackTrace());
+      LOG.info(ioe.getMessage());
     }
   }
 

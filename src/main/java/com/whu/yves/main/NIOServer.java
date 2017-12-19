@@ -1,6 +1,7 @@
 package com.whu.yves.main;
 
 import com.whu.yves.configuration.reader.YamlReader;
+import com.whu.yves.protocal.http.HttpProxy;
 import com.whu.yves.server.ChatActionHandler;
 import com.whu.yves.server.SelectorFactory;
 import com.whu.yves.server.task.ThreadPoolService;
@@ -17,6 +18,8 @@ public class NIOServer {
     //创建服务线程
     ThreadPoolService.init(YamlReader.getNThread());
     LOG.info("Thread Pool size: " + YamlReader.getNThread());
+    //初始化代理
+    HttpProxy.init();
     //开启NIOServer服务
     new ChatActionHandler(SelectorFactory.getSelector(YamlReader.getPort())).listen();
   }

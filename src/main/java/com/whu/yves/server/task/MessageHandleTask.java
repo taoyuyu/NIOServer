@@ -71,7 +71,7 @@ public class MessageHandleTask extends HandleTask {
 
   private void proxyModel(RequestParser requestParser, SocketChannel channel) throws IOException {
     requestParser.parse();
-    new HttpProxy(requestParser, channel);
+    HttpProxy.proxy(requestParser, channel);
   }
 
   private String readByteBuffer(ByteBuffer buffer) {

@@ -24,28 +24,32 @@ public class HttpProxy {
   private static Logger LOG = Logger.getLogger(HttpProxy.class);
   public static LoadBalance loadBalance;
   public static ConcurrentHashMap<String, Future> futureTasks = new ConcurrentHashMap<>();
-  private byte[] data = null;
-  private String request = null;
   private static String WEB_ROOT = System.getProperty("user.dir") + File.separator + "static";
   private static String template = "HTTP/1.1 %d %s\n" +
       "Content-Type: %s\n" +
       "Content-Length: %d\n" +
       "\n";
 
-  public HttpProxy(RequestParser parser, SocketChannel channel) throws IOException {
-    this.request = parser.getRequest();
+  private HttpProxy(){}
+
+  public static void init() {
+    // 初始化负载均衡算法
+    initLoadBalanceModel(YamlReader.getHosts());
+  }
+
+  public static void proxy(RequestParser parser, SocketChannel channel) throws IOException {
     String uri = parser.getUri();
     if ("/".equals(uri)) {
       LOG.info("get index.html");
       localResource(UtilStrings.INDEX_PAGE, channel);
     } else {
-      if (!deliverToRemoteHost(channel)) {
+      if (!deliverToRemoteHost(parser, channel)) {
         localResource(uri, channel);
       }
     }
   }
 
-  private void localResource(String uri, SocketChannel channel) throws IOException {
+  private static void localResource(String uri, SocketChannel channel) throws IOException {
     LOG.info("read local resource => " + uri);
     int status = 200;
     String msg = "OK";
@@ -54,9 +58,9 @@ public class HttpProxy {
     if (uri.toUpperCase().endsWith(".JPEG") || uri.toUpperCase().endsWith("JPG")) {
       contentType = "image/jpeg";
     }
-
-    if (!readFileByBytes(uri)) {
-      readFileByBytes(UtilStrings.ERROR_PAGE);
+    byte[] data;
+    if ((data = readFileByBytes(uri)) == null) {
+      data = readFileByBytes(UtilStrings.ERROR_PAGE);
       contentType = "text/html";
       status = 404;
       msg = "Not Found";
@@ -70,17 +74,16 @@ public class HttpProxy {
     channel.close();
   }
 
-  private boolean deliverToRemoteHost(SocketChannel channel) {
+  private static boolean deliverToRemoteHost(RequestParser parser, SocketChannel channel) {
     ArrayList<String> hosts = YamlReader.getHosts();
     SocketPair socketPair = new SocketPair(channel);
 
-    // 初始化负载均衡算法
-    initLoadBalanceModel(hosts);
+
 
     String host;
     while ((host = loadBalance.getNextHost()) != null) {
       if (socketPair.connect(host)) {
-        if (socketPair.deliverRequest(request)) {
+        if (socketPair.deliverRequest(parser.getRequest())) {
           return true;
         } else {
           return false;
@@ -95,27 +98,31 @@ public class HttpProxy {
     return false;
   }
 
-  private void initLoadBalanceModel(ArrayList<String> hosts) {
+  private static void initLoadBalanceModel(ArrayList<String> hosts) {
     if (loadBalance != null) {
       return;
-    }
-    if (Boolean.TRUE.equals(YamlReader.getRandom())) {
-      loadBalance = new RandomLoadBalance(hosts);
-      LOG.info("random LoadBalance...");
-      return;
     } else {
-      loadBalance = new PollingLoadBalance(hosts);
-      LOG.info("polling LoadBalance...");
+      synchronized (LoadBalance.class) {
+        if (loadBalance == null) {
+          if (Boolean.TRUE.equals(YamlReader.getRandom())) {
+            loadBalance = new RandomLoadBalance(hosts);
+            LOG.info("random LoadBalance...");
+            return;
+          } else {
+            loadBalance = new PollingLoadBalance(hosts);
+            LOG.info("polling LoadBalance...");
+          }
+        }
+      }
     }
-
-
   }
 
-  private boolean readFileByBytes(String uri) {
+  private static byte[] readFileByBytes(String uri) {
+    byte[] data = null;
     String filePath = WEB_ROOT + uri;
     File file = new File(filePath);
     if (!file.exists()) {
-      return false;
+      return null;
     }
 
     FileInputStream fis = null;
@@ -124,19 +131,18 @@ public class HttpProxy {
       int size = fis.available();
       data = new byte[size];
       fis.read(data);
-      return true;
+      return data;
     } catch (IOException fnfe) {
       LOG.error(String.format("File %s not found", filePath));
       LOG.error(fnfe.getMessage());
-      LOG.error(fnfe.getStackTrace());
-      return false;
+      return null;
     } finally {
       try {
         if (fis != null) {
           fis.close();
         }
       } catch (IOException ioe) {
-        return false;
+        return null;
       }
     }
   }

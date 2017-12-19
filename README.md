@@ -1,6 +1,6 @@
-# [NIOServer](https://github.com/taoyuyu/NIOServer)
+# [YProxyServer](https://github.com/taoyuyu/NIOServer)
 
-## What is NIOServer
+## What is YProxyServer
 * IM(Instant Messaging)
 * Web Application
 * Push Notification
@@ -21,7 +21,7 @@ Oracle Solaris
 
 ### Installation
 **Build from the source:**   
-> cd NIOServer  
+> cd YProxyServer  
 > mvn install  
 
 

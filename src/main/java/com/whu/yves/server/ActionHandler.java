@@ -37,7 +37,7 @@ public class ActionHandler implements DefaultActionHandler {
         }
       }
     } catch (IOException ioe) {
-      LOG.error(ioe.getStackTrace());
+      LOG.error(ioe.getMessage());
     }
   }
 

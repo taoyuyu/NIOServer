@@ -18,6 +18,7 @@ public class SocketPair {
   private SocketChannel channel;
   private Socket server = null;
   private String host = null;
+  private static int BUFFER_SIZE = 1024;
 
   public SocketPair(SocketChannel channel) {
     this.channel = channel;
@@ -72,13 +73,9 @@ public class SocketPair {
 
       //读取返回的数据
       DataInputStream dis = new DataInputStream(server.getInputStream());
-      byte[] data = new byte[128];
-      int length;
-      while ((length = dis.read(data)) != -1) {
+      byte[] data = new byte[BUFFER_SIZE];
+      while (dis.read(data) != -1) {
         channel.write(ByteBuffer.wrap(data));
-        if (length != 128) {
-          break;
-        }
       }
       channel.close();
       return true;

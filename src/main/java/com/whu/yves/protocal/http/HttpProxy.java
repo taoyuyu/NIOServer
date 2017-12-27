@@ -40,13 +40,14 @@ public class HttpProxy {
 
   public static void proxy(RequestParser parser, SocketChannel channel) throws IOException {
     String uri = parser.getUri();
-    if ("/".equals(uri)) {
-      LOG.info("get index.html");
-      localResource(UtilStrings.INDEX_PAGE, channel);
-    } else {
+    ArrayList<String> hosts = YamlReader.getHosts();
+    if (hosts != null && hosts.size() != 0) {
       if (!deliverToRemoteHost(parser, channel)) {
         localResource(uri, channel);
       }
+    } else {
+      LOG.info("load local index.html");
+      localResource(UtilStrings.INDEX_PAGE, channel);
     }
   }
 
@@ -76,7 +77,6 @@ public class HttpProxy {
   }
 
   private static boolean deliverToRemoteHost(RequestParser parser, SocketChannel channel) {
-    ArrayList<String> hosts = YamlReader.getHosts();
     SocketPair socketPair = new SocketPair(channel);
 
     String host;

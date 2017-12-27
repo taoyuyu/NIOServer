@@ -11,7 +11,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import org.apache.commons.codec.Charsets;
 import org.apache.log4j.Logger;
-import sun.jvm.hotspot.memory.HeapBlock.Header;
 
 public class SocketPair {
 
@@ -64,8 +63,6 @@ public class SocketPair {
     OutputStreamWriter out = null;
     BufferedWriter bw = null;
 
-    ResponseParser parser = null;
-
     try {
       //向后台服务器组发送数据
       out = new OutputStreamWriter(server.getOutputStream(), Charsets.UTF_8);
@@ -84,44 +81,6 @@ public class SocketPair {
         }
       }
       channel.close();
-
-//      input = new InputStreamReader(server.getInputStream(), Charsets.UTF_8);
-//      br = new BufferedReader(input);
-//      StringBuilder sb = new StringBuilder();
-//      String line;
-//      boolean tag = false;
-//      // 已读http response 长度;
-//      int responseContentLength = 0;
-//      while ((line = br.readLine()) != null) {
-//        if (!tag) {
-//          // 读http-header;
-//          sb.append(line);
-//          sb.append("\n");
-//          if ("".equals(line)) {
-//            // 读完http-header
-//            tag = true;
-//            parser = new ResponseParser(sb.toString());
-//            parser.parse();
-//            if (parser.getStatusCode() > 300) {
-//              return false;
-//            }
-//            channel.write(ByteBuffer.wrap(sb.toString().getBytes()));
-//          }
-//        }
-//
-//        if (tag) {
-//          // http-content
-//          channel.write(ByteBuffer.wrap(line.getBytes()));
-//          channel.write(ByteBuffer.wrap("\n".getBytes()));
-//          responseContentLength += line.length();
-//          responseContentLength++;
-//          if (parser != null && parser.getContentLength() > 0 && responseContentLength >= parser
-//              .getContentLength()) {
-//            channel.close();
-//            break;
-//          }
-//        }
-//      }
       return true;
     } catch (IOException ioe) {
 

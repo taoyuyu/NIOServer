@@ -2,6 +2,7 @@ package com.whu.yves.protocal.http;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -10,6 +11,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import org.apache.commons.codec.Charsets;
 import org.apache.log4j.Logger;
+import sun.jvm.hotspot.memory.HeapBlock.Header;
 
 public class SocketPair {
 
@@ -72,43 +74,54 @@ public class SocketPair {
       bw.flush();
 
       //读取返回的数据
-      input = new InputStreamReader(server.getInputStream(), Charsets.UTF_8);
-      br = new BufferedReader(input);
-      StringBuilder sb = new StringBuilder();
-      String line;
-      boolean tag = false;
-      // 已读http response 长度;
-      int responseContentLength = 0;
-      while ((line = br.readLine()) != null) {
-        if (!tag) {
-          // 读http-header;
-          sb.append(line);
-          sb.append("\n");
-          if ("".equals(line)) {
-            // 读完http-header
-            tag = true;
-            parser = new ResponseParser(sb.toString());
-            parser.parse();
-            if (parser.getStatusCode() > 300) {
-              return false;
-            }
-            channel.write(ByteBuffer.wrap(sb.toString().getBytes()));
-          }
-        }
-
-        if (tag) {
-          // http-content
-          channel.write(ByteBuffer.wrap(line.getBytes()));
-          channel.write(ByteBuffer.wrap("\n".getBytes()));
-          responseContentLength += line.length();
-          responseContentLength++;
-          if (parser != null && parser.getContentLength() > 0 && responseContentLength >= parser
-              .getContentLength()) {
-            channel.close();
-            break;
-          }
+      DataInputStream dis = new DataInputStream(server.getInputStream());
+      byte[] data = new byte[128];
+      int length;
+      while ((length = dis.read(data)) != -1) {
+        channel.write(ByteBuffer.wrap(data));
+        if (length != 128) {
+          break;
         }
       }
+      channel.close();
+
+//      input = new InputStreamReader(server.getInputStream(), Charsets.UTF_8);
+//      br = new BufferedReader(input);
+//      StringBuilder sb = new StringBuilder();
+//      String line;
+//      boolean tag = false;
+//      // 已读http response 长度;
+//      int responseContentLength = 0;
+//      while ((line = br.readLine()) != null) {
+//        if (!tag) {
+//          // 读http-header;
+//          sb.append(line);
+//          sb.append("\n");
+//          if ("".equals(line)) {
+//            // 读完http-header
+//            tag = true;
+//            parser = new ResponseParser(sb.toString());
+//            parser.parse();
+//            if (parser.getStatusCode() > 300) {
+//              return false;
+//            }
+//            channel.write(ByteBuffer.wrap(sb.toString().getBytes()));
+//          }
+//        }
+//
+//        if (tag) {
+//          // http-content
+//          channel.write(ByteBuffer.wrap(line.getBytes()));
+//          channel.write(ByteBuffer.wrap("\n".getBytes()));
+//          responseContentLength += line.length();
+//          responseContentLength++;
+//          if (parser != null && parser.getContentLength() > 0 && responseContentLength >= parser
+//              .getContentLength()) {
+//            channel.close();
+//            break;
+//          }
+//        }
+//      }
       return true;
     } catch (IOException ioe) {
 

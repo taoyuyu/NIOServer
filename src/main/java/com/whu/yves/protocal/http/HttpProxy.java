@@ -47,7 +47,11 @@ public class HttpProxy {
       }
     } else {
       LOG.info("load local index.html");
-      localResource(UtilStrings.INDEX_PAGE, channel);
+      if("/".equals(uri)) {
+        localResource(UtilStrings.INDEX_PAGE, channel);
+      } else {
+        localResource(uri, channel);
+      }
     }
   }
 

@@ -1,7 +1,8 @@
 port: 7682
-thread: 2
+thread: 8
 hosts:
- - 'ten1:7681'
- - 'ten2:7681'
+ - 'xcfish.cn'
+# - 'ten1:7681'
+# - 'ten2:7681'
 
 random: false

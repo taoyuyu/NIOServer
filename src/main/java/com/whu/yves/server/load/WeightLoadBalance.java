@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class WeightLoadBalance extends DefaultLoadBalance {
   public WeightLoadBalance(ArrayList<String> hosts) {
-    super(hosts);
+    super(hosts, false);
   }
 
   @Override

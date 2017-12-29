@@ -4,18 +4,25 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class RandomLoadBalance extends DefaultLoadBalance {
+
   private Random random = new Random();
+
   public RandomLoadBalance(ArrayList<String> hosts) {
-    super(hosts);
+    super(hosts, false);
   }
 
   @Override
   public String getNextHost() {
-    int size = hosts.size();
-    if (size == 0) {
-      return null;
+    rwLock.readLock().lock();
+    try {
+      int size = hosts.size();
+      if (size == 0) {
+        return null;
+      }
+      return hosts.get(random.nextInt(size));
+    } finally {
+      rwLock.readLock().unlock();
     }
-    return hosts.get(random.nextInt(size));
   }
 
   @Override

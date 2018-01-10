@@ -1,6 +1,7 @@
 package com.whu.yves.server;
 
 import java.io.IOException;
+import java.nio.channels.CancelledKeyException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -42,17 +43,22 @@ public class ActionHandler implements DefaultActionHandler {
   }
 
   private void process(SelectionKey key) {
-    if (key.isAcceptable()) {
-      // 接收请求
-      acceptAction(key);
-    } else if (key.isReadable()) {
-      // 读事件
-      readAction(key);
-    } else if (key.isWritable()) {
-      // 写事件
-      LOG.info("write channel");
-      writeAction(key);
+    try {
+      if (key.isAcceptable()) {
+        // 接收请求
+        acceptAction(key);
+      } else if (key.isReadable()) {
+        // 读事件
+        readAction(key);
+      } else if (key.isWritable()) {
+        // 写事件
+        LOG.info("write channel");
+        writeAction(key);
+      }
+    } catch (CancelledKeyException ce) {
+      LOG.info(ce.getMessage());
     }
+
   }
 
   protected void acceptAction(SelectionKey key) {

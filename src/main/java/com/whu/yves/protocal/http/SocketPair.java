@@ -18,7 +18,8 @@ public class SocketPair {
   private SocketChannel channel;
   private Socket server = null;
   private String host = null;
-  private static int BUFFER_SIZE = 1024;
+  private static int BUFFER_SIZE = 8;
+  private static int RETRY_COUNT = 16;
 
   public SocketPair(SocketChannel channel) {
     this.channel = channel;
@@ -74,9 +75,26 @@ public class SocketPair {
       //读取返回的数据
       DataInputStream dis = new DataInputStream(server.getInputStream());
       byte[] data = new byte[BUFFER_SIZE];
-      while (dis.read(data) != -1) {
-        channel.write(ByteBuffer.wrap(data));
+
+      //增加错误尝试
+      boolean finished = false;
+      int len;
+      int count_fail = 0;
+      while (!finished) {
+        len = dis.read(data);
+        if (len != -1) {
+          count_fail = 0;
+          channel.write(ByteBuffer.wrap(data));
+        } else {
+          if (++count_fail == RETRY_COUNT) {
+            finished = true;
+          }
+        }
       }
+
+//      while (dis.read(data) != -1) {
+//        channel.write(ByteBuffer.wrap(data));
+//      }
       channel.close();
       return true;
     } catch (IOException ioe) {

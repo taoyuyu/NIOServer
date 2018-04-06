@@ -18,8 +18,8 @@ public class SocketPair {
   private SocketChannel channel;
   private Socket server = null;
   private String host = null;
-  private static int BUFFER_SIZE = 8;
-  private static int RETRY_COUNT = 16;
+  private static int BUFFER_SIZE = 32;
+  private static int RETRY_COUNT = 1;
 
   public SocketPair(SocketChannel channel) {
     this.channel = channel;
@@ -98,7 +98,7 @@ public class SocketPair {
       channel.close();
       return true;
     } catch (IOException ioe) {
-
+      closeServerConnection();
     } finally {
       try {
         if (bw != null) {

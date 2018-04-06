@@ -41,7 +41,7 @@ public class ChatActionHandler extends ActionHandler {
         channel.close();
         Future<?> future = tasks.get(channel.socket().hashCode());
         if (future != null) {
-          future.cancel(true);
+//          future.cancel(true);
           tasks.remove(channel.socket().hashCode());
           LOG.info("cancel a task");
         }

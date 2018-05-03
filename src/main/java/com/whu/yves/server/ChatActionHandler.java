@@ -22,20 +22,6 @@ public class ChatActionHandler extends ActionHandler {
   private static ConcurrentHashMap<Integer, Future<?>> tasks = new ConcurrentHashMap<Integer, Future<?>>();
   private int BYTE_BUFFER_SIZE = 1024;
 
-  static {
-    new Thread(()->{
-      while (true) {
-        System.out.println("size: " + tasks.size());
-        try {
-          Thread.currentThread().sleep(1000);
-        } catch (InterruptedException ie) {
-
-        }
-      }
-    }).start();
-  }
-
-
   public ChatActionHandler(Selector selector) {
     super(selector);
   }

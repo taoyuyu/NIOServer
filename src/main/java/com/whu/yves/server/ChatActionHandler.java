@@ -22,6 +22,20 @@ public class ChatActionHandler extends ActionHandler {
   private static ConcurrentHashMap<Integer, Future<?>> tasks = new ConcurrentHashMap<Integer, Future<?>>();
   private int BYTE_BUFFER_SIZE = 1024;
 
+  static {
+    new Thread(()->{
+      while (true) {
+        System.out.println("size: " + tasks.size());
+        try {
+          Thread.currentThread().sleep(1000);
+        } catch (InterruptedException ie) {
+
+        }
+      }
+    }).start();
+  }
+
+
   public ChatActionHandler(Selector selector) {
     super(selector);
   }
@@ -35,16 +49,16 @@ public class ChatActionHandler extends ActionHandler {
       int count = channel.read(buffer);
       if (count > 0) {
         Future<?> future = ThreadPoolService.submit(new MessageHandleTask(channel, buffer));
-        tasks.put(channel.socket().hashCode(), future);
+//        tasks.put(channel.socket().hashCode(), future);
       } else {
         LOG.info(channel.socket().hashCode() + " closed");
         channel.close();
-        Future<?> future = tasks.get(channel.socket().hashCode());
-        if (future != null) {
+//        Future<?> future = tasks.get(channel.socket().hashCode());
+//        if (future != null) {
 //          future.cancel(true);
-          tasks.remove(channel.socket().hashCode());
-          LOG.info("cancel a task");
-        }
+//          tasks.remove(channel.socket().hashCode());
+//          LOG.info("cancel a task");
+//        }
       }
     } catch (IOException e) {
       LOG.error("close channel error: " + e.getMessage());

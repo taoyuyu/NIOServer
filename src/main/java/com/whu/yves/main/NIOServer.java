@@ -19,7 +19,7 @@ public class NIOServer {
     ThreadPoolService.init(YamlReader.getNThread());
     //关闭线程池
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-      System.out.println("shutdonw succeed!");
+      LOG.info("shutdonw succeed!");
       ThreadPoolService.shutdown();
     }));
     LOG.info("Thread Pool size: " + YamlReader.getNThread());

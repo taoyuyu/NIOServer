@@ -17,12 +17,16 @@ public class NIOServer {
     YamlReader.prepare(args[0]);
     //创建服务线程
     ThreadPoolService.init(YamlReader.getNThread());
+    //关闭线程池
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+      System.out.println("shutdonw succeed!");
+      ThreadPoolService.shutdown();
+    }));
     LOG.info("Thread Pool size: " + YamlReader.getNThread());
     //初始化代理
     HttpProxy.init();
     //开启NIOServer服务
     new ChatActionHandler(SelectorFactory.getSelector(YamlReader.getPort())).listen();
-    //关闭线程池
-    ThreadPoolService.shutdown();
+
   }
 }
